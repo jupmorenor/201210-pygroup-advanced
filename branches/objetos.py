@@ -67,7 +67,12 @@ class Rotor_de_Tanque(pygame.sprite.Sprite):
 class Enemigo_Tanque(Rotor_de_Tanque):
 	"""Objeto enemigo del primer nivel"""
 	def __init__(self, ruta_img, ruta_snd):
-		Rotor_de_Tanque.__init__(self, ruta_img, ruta_snd)
+		pygame.sprite.Sprite.__init__(self)
+		self.preimagen = Generales.cargar_imagen(ruta_img)
+		self.postimagen = self.preimagen
+		self.rectangulo = self.preimagen.get_rect()
+		self.disparo = Generales.cargar_sonido(ruta_snd)
+		self.balas_disparadas=[]
 		self.velocidad = 2
 	
 	def actualizar(self, direccion):
