@@ -60,7 +60,7 @@ class Rotor_de_Tanque(pygame.sprite.Sprite):
 		
 	def disparar(self, boton_mouse):
 		if boton_mouse:
-			bala = Bala(self.rectangulo, self.angulo)#por implementar
+			bala = Bala(self.rectangulo, self.angulo)
 			self.disparo.play()
 			self.balas_disparadas.append(bala)
 		
@@ -80,6 +80,28 @@ class Enemigo_Tanque(Rotor_de_Tanque):
 		self.postimagen = pygame.transform.rotate(self.preimagen, self.angulo)
 		self.rectangulo.centerx+=Generales.vector_en_x(self.velocidad, self.angulo)
 		self.rectangulo.centery+=Generales.vector_en_y(self.velocidad, self.angulo)
+      
+  def disparar(self):
+		bala = Bala(self.rectangulo, self.angulo)
+		self.balas_disparadas.append(bala)
+    #falta definir la forma en que el tanque enemigo dispara
+		pass
+	
+class Bala(pygame.sprite.Sprite):
+	"""Objeto bala general para todos los objetosq ue disparan"""
+	def __init__(self, ruta_img, posicion_inicial, angulo):
+		pygame.sprite.Sprite.__init__(self)
+		self.angulo = angulo
+		self.imagen = pygame.transform.rotate(Generales.cargar_imagen(ruta_img), self.angulo)
+		self.rectangulo = self.imagen.get_rect()
+		self.velocidad = 4
+		self.rectangulo.center = posicion_inicial
+		
+	def actualizar(self):
+		self.rectangulo.centerx+=Generales.vector_en_x(self.velocidad, self.angulo)
+		self.rectangulo.centery+=Generales.vector_en_y(self.velocidad, self.angulo)
+		if self.rectangulo.centerx > ANCHO or self.rectangulo.centerx < 0 or self.rectangulo.centery > ALTO or self.rectangulo.centery < 0:
+			self.kill()
 		
 		
 		
