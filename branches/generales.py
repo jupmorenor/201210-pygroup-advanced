@@ -9,6 +9,9 @@ from math import degrees, radians, sin, cos, atan2
 
 class Generales():
 	"""Funciones para uso general de cualquier objeto"""
+  def __init__(self):
+    self.VENTANA=self.ANCHO,self.ALTO=800,600
+      
 	def cargar_imagen(self, ruta):
 		"""funcion para cargar imagenes"""
 		try: imagen=pygame.image.load(ruta).convert_alpha()
