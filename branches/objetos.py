@@ -14,11 +14,6 @@ Created on 10/05/2012
 import pygame, sys, random
 from pygame.locals import *
 from generales import *
-
-# ----------------------------------------------
-# Constantes
-# ----------------------------------------------
-VENTANA=ANCHO,ALTO=800,600
 # ----------------------------------------------
 # Clases
 # ----------------------------------------------
@@ -48,7 +43,7 @@ class Base_de_Tanque(pygame.sprite.Sprite):
 		if evento.key==K_RIGHT:
 			self.rectangulo.centerx+=self.velocidad
 			self.postimagen=pygame.transform.rotate(self.preimagen,0)
-		self.rectangulo = [min(max(self.rectangulo.centerx,-8),ANCHO-32), min(max(self.rectangulo.centery,-8),ALTO-32)]
+		self.rectangulo = [min(max(self.rectangulo.centerx,-8),Generales.VENTANA[0]-32), min(max(self.rectangulo.centery,-8),Generales.VENTANA[1]-32)]
 		
 class Rotor_de_Tanque(pygame.sprite.Sprite):
 	"""Objeto tanque del primer nivel"""
@@ -108,7 +103,7 @@ class Bala(pygame.sprite.Sprite):
 	def actualizar(self):
 		self.rectangulo.centerx+=Generales.vector_en_x(self.velocidad, self.angulo)
 		self.rectangulo.centery+=Generales.vector_en_y(self.velocidad, self.angulo)
-		if self.rectangulo.centerx > ANCHO or self.rectangulo.centerx < 0 or self.rectangulo.centery > ALTO or self.rectangulo.centery < 0:
+		if self.rectangulo.centerx > Generales.VENTANA[0] or self.rectangulo.centerx < 0 or self.rectangulo.centery > Generales.VENTANA[1] or self.rectangulo.centery < 0:
 			self.kill()
 		
 		
