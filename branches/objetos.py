@@ -11,74 +11,103 @@
 Created on 10/05/2012
 @author: Juan Pablo Moreno y Alejandro Duarte
 '''
+import pygame, sys, random
+from pygame.locals import *
+from generales import *
 
-import pygame
-from pygame.locals import*
-from math import degrees, radians, sin, cos, atan2
+funciones = Generales()
 
-class Generales():
-
-	"""Constantes para uso general de cualquier objeto"""
-	def __init__(self):
-		self.VENTANA=self.ANCHO,self.ALTO=800,600
-	
-	"""Funciones para uso general de cualquier objeto"""
-	def cargar_imagen(self, ruta):
-		"""funcion para cargar imagenes"""
-		try: imagen=pygame.image.load(ruta).convert_alpha()
-		except(pygame.error): #en caso de error
-			print("No se pudo cargar la imagen: ", ruta)
-			raise(SystemExit)
-		return imagen
+# ----------------------------------------------
+# Clases
+# ----------------------------------------------
+class Base_de_Tanque(pygame.sprite.Sprite):
+	"""Objeto tanque del primer nivel"""
+	def __init__(self, ruta_img):
+		pygame.sprite.Sprite.__init__(self)
+		self.preimagen = funciones.cargar_imagen(ruta_img)
+		self.postimagen = self.preimagen
+		self.rect = self.preimagen.get_rect()
+		self.posicion=[100,100]
+		self.rect.center = self.posicion
+		self.velocidad = 5
 		
-	def cargar_sonido(self, ruta):
-		"""Funcion para cargar sonidos"""
-		try:sonido=pygame.mixer.Sound(ruta)
-		except(pygame.error):
-			print("No se pudo cargar el sonido: ", ruta)
-			sonido=None
-		return sonido
-	
-	def cargar_musica(self, ruta):
-		"""Funcion para cargar musica"""
-		try: pygame.mixer.music.load(ruta)
-		except(pygame.error):
-			print("No se pudo cargar la cancion: ", ruta)
 		
-	def texto(self, tipo_letra, texto, posx, posy, color):
-		"""Funcion para escritura de texto"""
-		fuente = pygame.font.Font(tipo_letra, 25)
-		salida = pygame.font.Font.render(fuente, texto, 1, color)
-		salida_rect = salida.get_rect()
-		salida_rect.centerx = posx
-		salida_rect.centery = posy
-		return salida, salida_rect
-	
-	def agregar_imagen(self, ruta, largo, alto):
-		"""Funcion para cortar las subimagenes de una imagen animada"""
-		subimagenes = []
-		imagen_completa = self.cargar_imagen(ruta)
-		ancho_total, altura_total = imagen_completa.get_size()
-		for i in range(int(ancho_total/largo)):
-			subimagenes.append(imagen_completa.subsurface((i*largo,0,largo,alto)))
-		return subimagenes
-	
-	def direccion_punto(self, x,y,x2_y2,):
-		"""Funcion que devuelve la direccion que hay hacia un punto"""
-		x2, y2 = x2_y2
-		dist_x = x2-x
-		dist_y = y2-y
-		direccion=-1*degrees(atan2(dist_y,dist_x))
-		return direccion
+	def actualizar(self, evento):
+		if evento.key==K_ESCAPE:
+			pygame.quit()
+			sys.exit()
+		if evento.key==K_UP:
+			self.posicion[1]-=self.velocidad
+			self.postimagen=pygame.transform.rotate(self.preimagen,90)
+		if evento.key==K_DOWN:
+			self.posicion[1]+=self.velocidad
+			self.postimagen=pygame.transform.rotate(self.preimagen,270)
+		if evento.key==K_LEFT:
+			self.posicion[0]-=self.velocidad
+			self.postimagen=pygame.transform.rotate(self.preimagen,180)
+		if evento.key==K_RIGHT:
+			self.posicion[0]+=self.velocidad
+			self.postimagen=pygame.transform.rotate(self.preimagen,0)
+		self.rect.center = [min(max(self.posicion[0],0),funciones.VENTANA[0]), min(max(self.posicion[1],0),funciones.VENTANA[1])]
 		
-	def vector_en_x(self, length, dirr):
-		"""Devuelve el componente x de un vector"""
-		x_dist=cos(radians(dirr)) * length
-		return x_dist
-	
-	def vector_en_y(self, length, dirr):
-		"""Devuelve el componente y de un vector"""
-		y_dist=sin(radians(dirr)) * -length
-		return y_dist
-
+class Rotor_de_Tanque(pygame.sprite.Sprite):
+	"""Objeto tanque del primer nivel"""
+	def __init__(self, ruta_img, ruta_snd):
+		pygame.sprite.Sprite.__init__(self)
+		self.preimagen = funciones.cargar_imagen(ruta_img)
+		self.postimagen = self.preimagen
+		self.rect = self.preimagen.get_rect()
+		self.disparo = funciones.cargar_sonido(ruta_snd)
+		self.balas_disparadas=[]
 		
+	def actualizar(self, mouse, ventana, baseTanque):
+		self.angulo = funciones.direccion_punto(self.rect.centerx, self.rect.centery, mouse)
+		self.postimagen = pygame.transform.rotate(self.preimagen, self.angulo)
+		self.rect = self.postimagen.get_rect()
+		self.rect.center = baseTanque
+		ventana.blit(self.postimagen, self.rect)
+		
+	def disparar(self, boton_mouse):
+		if boton_mouse:
+			bala = Bala("imagenes/nivel 1/bala.png", self.rect.center, self.angulo)
+			#self.disparo.play()
+			self.balas_disparadas.append(bala)
+		
+class Enemigo_Tanque(pygame.sprite.Sprite):
+	"""Objeto enemigo del primer nivel"""
+	def __init__(self, ruta_img, ruta_snd):
+		pygame.sprite.Sprite.__init__(self)
+		self.preimagen = funciones.cargar_imagen(ruta_img)
+		self.postimagen = self.preimagen
+		self.rect = self.preimagen.get_rect()
+		self.disparo = funciones.cargar_sonido(ruta_snd)
+		self.velocidad = 2
+		self.balas_disparadas=[]
+	
+	def actualizar(self, direccion):
+		self.angulo = funciones.direccion_punto(self.rect.centerx, self.rect.centery, direccion)
+		self.postimagen = pygame.transform.rotate(self.preimagen, self.angulo)
+		self.rect.centerx+=funciones.vector_en_x(self.velocidad, self.angulo)
+		self.rect.centery+=funciones.vector_en_y(self.velocidad, self.angulo)
+		
+	def disparar(self):
+		bala = Bala(self.rect, self.angulo)
+		self.balas_disparadas.append(bala)
+		#falta definir la forma en que el tanque enemigo dispara
+		pass
+	
+class Bala(pygame.sprite.Sprite):
+	"""Objeto bala general para todos los objetos que disparan"""
+	def __init__(self, ruta_img, posicion_inicial, angulo):
+		pygame.sprite.Sprite.__init__(self)
+		self.angulo = angulo
+		self.imagen = pygame.transform.rotate(funciones.cargar_imagen(ruta_img), self.angulo)
+		self.rect = self.imagen.get_rect()
+		self.velocidad = 4
+		self.rect.center = posicion_inicial
+		
+	def actualizar(self):
+		self.rect.centerx+=funciones.vector_en_x(self.velocidad, self.angulo)
+		self.rect.centery+=funciones.vector_en_y(self.velocidad, self.angulo)
+		if self.rect.centerx > funciones.VENTANA[0] or self.rect.centerx < 0 or self.rect.centery > funciones.VENTANA[1] or self.rect.centery < 0:
+			self.kill()
