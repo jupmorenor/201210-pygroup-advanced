@@ -1,17 +1,28 @@
+#       This program is free software; you can redistribute it and/or modify
+#       it under the terms of the GNU General Public License as published by
+#       the Free Software Foundation; either version 2 of the License, or
+#       (at your option) any later version.
+#       
+#       This program is distributed in the hope that it will be useful,
+#       but WITHOUT ANY WARRANTY; without even the implied warranty of
+#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#       GNU General Public License for more details.
 '''
 Created on 10/05/2012
-
-@author: Juanpa y Yami
+@author: Juan Pablo Moreno y Alejandro Duarte
 '''
+
 import pygame
 from pygame.locals import*
 from math import degrees, radians, sin, cos, atan2
 
 class Generales():
+
+	"""Constantes para uso general de cualquier objeto"""
+	def __init__(self):
+		self.VENTANA=self.ANCHO,self.ALTO=800,600
+	
 	"""Funciones para uso general de cualquier objeto"""
-  def __init__(self):
-    self.VENTANA=self.ANCHO,self.ALTO=800,600
-      
 	def cargar_imagen(self, ruta):
 		"""funcion para cargar imagenes"""
 		try: imagen=pygame.image.load(ruta).convert_alpha()
@@ -27,10 +38,16 @@ class Generales():
 			print("No se pudo cargar el sonido: ", ruta)
 			sonido=None
 		return sonido
+	
+	def cargar_musica(self, ruta):
+		"""Funcion para cargar musica"""
+		try: pygame.mixer.music.load(ruta)
+		except(pygame.error):
+			print("No se pudo cargar la cancion: ", ruta)
 		
-	def texto(self, letra, texto, posx, posy, color):
+	def texto(self, tipo_letra, texto, posx, posy, color):
 		"""Funcion para escritura de texto"""
-		fuente = pygame.font.Font(letra, 25)
+		fuente = pygame.font.Font(tipo_letra, 25)
 		salida = pygame.font.Font.render(fuente, texto, 1, color)
 		salida_rect = salida.get_rect()
 		salida_rect.centerx = posx
@@ -52,7 +69,6 @@ class Generales():
 		dist_x = x2-x
 		dist_y = y2-y
 		direccion=-1*degrees(atan2(dist_y,dist_x))
-		#direccion=180+(-1*degrees(atan(dist_y,dist_x)))
 		return direccion
 		
 	def vector_en_x(self, length, dirr):
