@@ -45,9 +45,9 @@ class Generales():
 		except(pygame.error):
 			print("No se pudo cargar la cancion: ", ruta)
 		
-	def texto(self, tipo_letra, texto, posx, posy, color):
+	def texto(self, texto, posx, posy, color):
 		"""Funcion para escritura de texto"""
-		fuente = pygame.font.Font(tipo_letra, 25)
+		fuente = pygame.font.Font("DroidSans.ttf", 20)
 		salida = pygame.font.Font.render(fuente, texto, 1, color)
 		salida_rect = salida.get_rect()
 		salida_rect.centerx = posx
