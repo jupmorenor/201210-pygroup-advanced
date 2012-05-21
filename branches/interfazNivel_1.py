@@ -21,6 +21,7 @@ from objetos import *
 class Nivel1():
 	def __init__(self):
 		self.funciones = Generales()
+		self.control = Jugador_Control()
 		self.ventana = pygame.display.set_mode(self.funciones.VENTANA)
 		self.imagen_fondo = self.funciones.cargar_imagen("imagenes/nivel 1/fondo_Nv_1.png")
 		self.musica_fondo = self.funciones.cargar_musica("sonido/CROSSFIRE BARRAGE.ogg")
@@ -51,9 +52,18 @@ class Nivel1():
 			self.ventana.blit(self.imagen_fondo, (0,0))
 			self.ventana.blit(self.base_tanque.postimagen, self.base_tanque.rect)
 			self.rotor_tanque.actualizar(self.pos_mouse, self.ventana, self.base_tanque.rect.center)
-			for i in range(len(self.rotor_tanque.balas_disparadas)-1):
-				self.balas = self.rotor_tanque.balas_disparadas[i]
-				self.ventana.blit(self.balas.imagen, self.balas.rect)
-				self.balas.actualizar()
+			
+
+			for i in range(len(self.rotor_tanque.balas_disparadas)):
+				if self.rotor_tanque.balas_disparadas[i].actualizar(self.ventana):
+					self.rotor_tanque.balas_disparadas.pop(i)
+					break
+			self.control.actualizar(self.base_tanque.vidas, self.rotor_tanque.balas_porDisparar, self.ventana)
 			pygame.display.update()
 		return 0
+
+###pruebas
+if __name__ == '__main__':
+	pygame.init()
+	nivel1=Nivel1()
+	nivel1.mainNivel1()
