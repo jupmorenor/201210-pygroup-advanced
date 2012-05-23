@@ -23,8 +23,38 @@ funciones = Generales()
 class Jugador_Control():
 	"""objeto controlador del momento del juego"""
 	def __init__(self):
-		self.puntaje = 0
+		self.puntajeTotal = 0
 		self.color_texto=[0,0,0]
+    self.puntajeNivel=0
+    self.nivel=0
+    self.vida=100
+    self.balas=0
+    self.tiempo=0
+  def cambiarVida(self, cambioV):
+    self.vida+=self.vida+cambioV
+    return self.vida
+  def cambiarBalas(self, cambioB):
+    return self.balas=self.balas+cambioB
+    
+  def verificarCambiarNivel(self, puntaje, tiempoT, vidaT, balasT):
+    cambiarNivel=False 
+    if self.puntajeNivel==100:
+      self.puntajeTotal=self.puntajeTotal+bonusTiempo(tiempoT)+bonusVida(vidaT)+bonusBalas(balasT)
+      cambiarNivel=True
+    return cambiarNivel
+  def cambiarNivel(self, verificar):
+    """Instrucciones para cambiar de nivel"""
+    
+  def bonusTiempo(self, tiempoT):
+    """instrucciones para dar bonus de tiempo"""
+    return bonusT
+  def bonusVidas(self, vidaT):
+    """Instrucciones para bonus vidas"""
+    return bonusV
+  def bonusbalas(self, balasT):
+    """Instrucciones para bonus de cantidad de balas"""
+    return bonusB
+    
 		
 	def actualizar(self, vidas, balas, ventana):
 		self.puntos_img, self.puntos_rect = funciones.texto("Puntos: " +str(self.puntaje), 64, 16, self.color_texto)
