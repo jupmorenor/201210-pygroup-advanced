@@ -29,10 +29,12 @@ class Jugador_Control():
     self.nivel=0
     self.vida=100
     self.balas=0
-    self.tiempo=0
+    self.tiempo=0#rangos de tiempo para la conversion a puntaje,tiempo creciente
+
   def cambiarVida(self, cambioV):
     self.vida+=self.vida+cambioV
     return self.vida
+
   def cambiarBalas(self, cambioB):
     return self.balas=self.balas+cambioB
     
@@ -41,16 +43,19 @@ class Jugador_Control():
     if self.puntajeNivel==100:
       self.puntajeTotal=self.puntajeTotal+bonusTiempo(tiempoT)+bonusVida(vidaT)+bonusBalas(balasT)
       cambiarNivel=True
-    return cambiarNivel
+      return cambiarNivel
+
   def cambiarNivel(self, verificar):
     """Instrucciones para cambiar de nivel"""
     
   def bonusTiempo(self, tiempoT):
     """instrucciones para dar bonus de tiempo"""
     return bonusT
+
   def bonusVidas(self, vidaT):
     """Instrucciones para bonus vidas"""
     return bonusV
+
   def bonusbalas(self, balasT):
     """Instrucciones para bonus de cantidad de balas"""
     return bonusB
@@ -74,7 +79,7 @@ class Base_de_Tanque(pygame.sprite.Sprite):
 		self.posicion=[100,100]
 		self.rect.center = self.posicion
 		self.velocidad = 5
-		self.vidas = 5
+		self.vidas = 5 #debe pasar a jugador_control
 		
 	def actualizar(self, evento):
 		if evento.key==K_ESCAPE:
@@ -102,7 +107,7 @@ class Rotor_de_Tanque(pygame.sprite.Sprite):
 		self.postimagen = self.preimagen
 		self.rect = self.preimagen.get_rect()
 		self.disparo = funciones.cargar_sonido(ruta_snd)
-		self.balas_porDisparar = 20
+		self.balas_porDisparar = 20 #pasar a Jugador_Control
 		self.balas_disparadas=[]
 		
 	def actualizar(self, mouse, ventana, baseTanque):
