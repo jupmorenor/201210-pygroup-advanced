@@ -24,7 +24,7 @@ class Jugador_Control():
 	"""objeto controlador del momento del juego"""
 	def __init__(self):
 		self.puntajeTotal = 0
-		self.color_texto=[0,0,0]
+    self.color_texto=[0,0,0]
     self.puntajeNivel=0
     self.nivel=0
     self.vida=100
