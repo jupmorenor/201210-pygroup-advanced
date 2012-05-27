@@ -39,6 +39,7 @@ class Nivel1():
 			self.pos_mouse = pygame.mouse.get_pos()
 			self.bot_mouse = pygame.mouse.get_pressed()
 			
+			#Seccion de actualizacion de eventos
 			for evento in pygame.event.get():
 				if evento.type == pygame.QUIT:
 					pygame.mixer.music.stop()
@@ -49,16 +50,12 @@ class Nivel1():
 				if evento.type == pygame.MOUSEBUTTONDOWN:
 					self.rotor_tanque.disparar(self.bot_mouse)
 		
+			#Seccion de dibujo
 			self.ventana.blit(self.imagen_fondo, (0,0))
 			self.ventana.blit(self.base_tanque.postimagen, self.base_tanque.rect)
 			self.rotor_tanque.actualizar(self.pos_mouse, self.ventana, self.base_tanque.rect.center)
-			
-
-			for i in range(len(self.rotor_tanque.balas_disparadas)):
-				if self.rotor_tanque.balas_disparadas[i].actualizar(self.ventana):
-					self.rotor_tanque.balas_disparadas.pop(i)
-					break
-			self.control.actualizar(self.base_tanque.vidas, self.rotor_tanque.balas_porDisparar, self.ventana)
+			self.rotor_tanque.dibujar_Balas(self.ventana)
+			self.rotor_tanque.actualizar1(self.ventana)
 			pygame.display.update()
 		return 0
 
