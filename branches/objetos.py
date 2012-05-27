@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
 #       the Free Software Foundation; either version 2 of the License, or
@@ -24,47 +25,48 @@ class Jugador_Control():
 	"""objeto controlador del momento del juego"""
 	def __init__(self):
 		self.puntajeTotal = 0
-    self.color_texto=[0,0,0]
-    self.puntajeNivel=0
-    self.nivel=0
-    self.vida=100
-    self.balas=0
-    self.tiempo=0#rangos de tiempo para la conversion a puntaje,tiempo creciente
-
-  def cambiarVida(self, cambioV):
-    self.vida+=self.vida+cambioV
-    return self.vida
-
-  def cambiarBalas(self, cambioB):
-    return self.balas=self.balas+cambioB
-    
-  def verificarCambiarNivel(self, puntaje, tiempoT, vidaT, balasT):
-    cambiarNivel=False 
-    if self.puntajeNivel==100:
-      self.puntajeTotal=self.puntajeTotal+bonusTiempo(tiempoT)+bonusVida(vidaT)+bonusBalas(balasT)
-      cambiarNivel=True
-      return cambiarNivel
-
-  def cambiarNivel(self, verificar):
-    """Instrucciones para cambiar de nivel"""
-    
-  def bonusTiempo(self, tiempoT):
-    """instrucciones para dar bonus de tiempo"""
-    return bonusT
-
-  def bonusVidas(self, vidaT):
-    """Instrucciones para bonus vidas"""
-    return bonusV
-
-  def bonusbalas(self, balasT):
-    """Instrucciones para bonus de cantidad de balas"""
-    return bonusB
-    
+		self.color_texto=[0,0,0]
+		self.puntajeNivel = 0
+		self.nivel = 0
+		self.vida = 100
+		self.balasPorDisparar = 20
+		self.tiempo = 0
 		
-	def actualizar(self, vidas, balas, ventana):
-		self.puntos_img, self.puntos_rect = funciones.texto("Puntos: " +str(self.puntaje), 64, 16, self.color_texto)
-		self.vidas_img, self.vidas_rect = funciones.texto("Vidas: " +str(vidas), 64, 32, self.color_texto)
-		self.balas_img, self.balas_rect = funciones.texto("Balas: " + str(balas), 64, 48, self.color_texto)
+	'''
+	def cambiarVida(self, cambioV):
+		self.vida+=self.vida+cambioV
+		return self.vida
+
+	def cambiarBalas(self, cambioB):
+		return self.balas=self.balas+cambioB
+		
+	def verificarCambiarNivel(self, puntaje, tiempoT, vidaT, balasT):
+		cambiarNivel=False 
+		if self.puntajeNivel==100:
+			self.puntajeTotal=self.puntajeTotal+self.bonusTiempo(tiempoT)+bonusVida(vidaT)+bonusBalas(balasT)
+			cambiarNivel=True
+			return cambiarNivel
+
+	def cambiarNivel(self, verificar):
+		"""Instrucciones para cambiar de nivel"""
+		
+	def bonusTiempo(self, tiempoT):
+		"""instrucciones para dar bonus de tiempo"""
+		return bonusT
+
+	def bonusVidas(self, vidaT):
+		"""Instrucciones para bonus vidas"""
+		return bonusV
+
+	def bonusbalas(self, balasT):
+		"""Instrucciones para bonus de cantidad de balas"""
+		return bonusB
+		'''
+		
+	def actualizar1(self, ventana):
+		self.puntos_img, self.puntos_rect = funciones.texto("Puntos: " +str(self.puntajeNivel), 64, 16, self.color_texto)
+		self.vidas_img, self.vidas_rect = funciones.texto("Vida: " +str(self.vida), 64, 32, self.color_texto)
+		self.balas_img, self.balas_rect = funciones.texto("Balas: " + str(self.balasPorDisparar), 64, 48, self.color_texto)
 		ventana.blit(self.puntos_img, self.puntos_rect)
 		ventana.blit(self.vidas_img, self.vidas_rect)
 		ventana.blit(self.balas_img, self.balas_rect)
@@ -79,8 +81,7 @@ class Base_de_Tanque(pygame.sprite.Sprite):
 		self.posicion=[100,100]
 		self.rect.center = self.posicion
 		self.velocidad = 5
-		self.vidas = 5 #debe pasar a jugador_control
-		
+			
 	def actualizar(self, evento):
 		if evento.key==K_ESCAPE:
 			pygame.quit()
@@ -96,18 +97,18 @@ class Base_de_Tanque(pygame.sprite.Sprite):
 			self.postimagen=pygame.transform.rotate(self.preimagen,180)
 		if evento.key==K_RIGHT:
 			self.posicion[0]+=self.velocidad
-			self.postimagen=pygame.transform.rotatSe corrige la forma en que se actualizan las balase(self.preimagen,0)
+			self.postimagen=pygame.transform.rotate(self.preimagen,0)
 		self.rect.center = [min(max(self.posicion[0],0),funciones.VENTANA[0]), min(max(self.posicion[1],0),funciones.VENTANA[1])]
 		
-class Rotor_de_Tanque(pygame.sprite.Sprite):
+class Rotor_de_Tanque(pygame.sprite.Sprite, Jugador_Control):
 	"""Objeto tanque del primer nivel"""
 	def __init__(self, ruta_img, ruta_snd):
 		pygame.sprite.Sprite.__init__(self)
+		Jugador_Control.__init__(self)
 		self.preimagen = funciones.cargar_imagen(ruta_img)
 		self.postimagen = self.preimagen
 		self.rect = self.preimagen.get_rect()
 		self.disparo = funciones.cargar_sonido(ruta_snd)
-		self.balas_porDisparar = 20 #pasar a Jugador_Control
 		self.balas_disparadas=[]
 		
 	def actualizar(self, mouse, ventana, baseTanque):
@@ -119,11 +120,17 @@ class Rotor_de_Tanque(pygame.sprite.Sprite):
 		
 	def disparar(self, boton_mouse):
 		if boton_mouse:
-			if self.balas_porDisparar>0:
+			if self.balasPorDisparar>0:
 				bala = Bala("imagenes/nivel 1/bala.png", self.rect.center, self.angulo)
 				#self.disparo.play()
 				self.balas_disparadas.append(bala)
-				self.balas_porDisparar-=1
+				self.balasPorDisparar-=1
+				
+	def dibujar_Balas(self, ventana):
+		for i in range(len(self.balas_disparadas)):
+			if self.balas_disparadas[i].actualizar(ventana):
+				self.balas_disparadas.pop(i)
+				break
 		
 class Enemigo_Tanque(pygame.sprite.Sprite):
 	"""Objeto enemigo del primer nivel"""
@@ -148,6 +155,12 @@ class Enemigo_Tanque(pygame.sprite.Sprite):
 		#falta definir la forma en que el tanque enemigo dispara
 		pass
 	
+	def dibujar_Balas(self, ventana):
+		for i in range(len(self.balas_disparadas)):
+			if self.balas_disparadas[i].actualizar(ventana):
+				self.balas_disparadas.pop(i)
+				break
+				
 class Bala(pygame.sprite.Sprite):
 	"""Objeto bala general para todos los objetos que disparan"""
 	def __init__(self, ruta_img, posicion_inicial, angulo):
@@ -164,3 +177,28 @@ class Bala(pygame.sprite.Sprite):
 		ventana.blit(self.imagen, self.rect)
 		if self.rect.centerx > funciones.VENTANA[0] or self.rect.centerx < 0 or self.rect.centery > funciones.VENTANA[1] or self.rect.centery < 0:
 			return True	
+		
+class Objeto_Bonus(pygame.sprite.Sprite):
+	"""Objeto recogible por el jugador"""
+	def __init__(self, pos, tp):
+		pygame.sprite.Sprite.__init__(self)
+		self.tipo={1:"vida", 2:"balas", 3:"tiempo", 4:"bomba"}
+		self.imagen = funciones.cargar_imagen("imagenes/nivel 1/"+self.tipo[tp]+".png")
+		self.rect = self.imagen.get_rect()
+		self.rect.center = pos
+		
+		
+	def actualizar(self, ventana, otro):
+		ventana.blit(self.imagen, self.rect)
+		return self.rect.collideRect(otro)
+	
+	def dar_Bonus(self, ventana, otro):
+		if self.actualizar(ventana, otro):
+			if self.tipo == 1:
+				return 10
+			elif self.tipo == 2:
+				return 5
+			elif self.tipo == 3:
+				return -10
+			elif self.tipo == 4:
+				return -1
