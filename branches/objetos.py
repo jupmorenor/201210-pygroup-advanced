@@ -98,7 +98,8 @@ class Base_de_Tanque(pygame.sprite.Sprite):
 		if evento.key==K_RIGHT:
 			self.posicion[0]+=self.velocidad
 			self.postimagen=pygame.transform.rotate(self.preimagen,0)
-		self.rect.center = [min(max(self.posicion[0],0),funciones.VENTANA[0]), min(max(self.posicion[1],0),funciones.VENTANA[1])]
+		self.posicion=[min(max(self.posicion[0],0),funciones.VENTANA[0]), min(max(self.posicion[1],0),funciones.VENTANA[1])]
+		self.rect.center = self.posicion
 		
 class Rotor_de_Tanque(pygame.sprite.Sprite, Jugador_Control):
 	"""Objeto tanque del primer nivel"""
@@ -134,32 +135,46 @@ class Rotor_de_Tanque(pygame.sprite.Sprite, Jugador_Control):
 		
 class Enemigo_Tanque(pygame.sprite.Sprite):
 	"""Objeto enemigo del primer nivel"""
-	def __init__(self, ruta_img, ruta_snd):
+	def __init__(self, x, y, ruta_img, ruta_snd):
 		pygame.sprite.Sprite.__init__(self)
 		self.preimagen = funciones.cargar_imagen(ruta_img)
 		self.postimagen = self.preimagen
 		self.rect = self.preimagen.get_rect()
+		self.posicion = [x,y]
+		self.rect.center = self.posicion
 		self.disparo = funciones.cargar_sonido(ruta_snd)
-		self.velocidad = 2
+		self.velocidad = 0.5
+		self.frecuencia = random.randrange(250,500,1)
+		self.alarma = self.frecuencia
+		self.objeto = random.randrange(1,7)
 		self.balas_disparadas=[]
 	
 	def actualizar(self, direccion):
 		self.angulo = funciones.direccion_punto(self.rect.centerx, self.rect.centery, direccion)
 		self.postimagen = pygame.transform.rotate(self.preimagen, self.angulo)
-		self.rect.centerx+=funciones.vector_en_x(self.velocidad, self.angulo)
-		self.rect.centery+=funciones.vector_en_y(self.velocidad, self.angulo)
+		self.rect = self.postimagen.get_rect()
+		self.posicion[0]+=funciones.vector_en_x(self.velocidad, self.angulo)
+		self.posicion[1]+=funciones.vector_en_y(self.velocidad, self.angulo)
+		self.rect.center = self.posicion
+		self.alarma-=1
 		
 	def disparar(self):
-		bala = Bala(self.rect, self.angulo)
-		self.balas_disparadas.append(bala)
-		#falta definir la forma en que el tanque enemigo dispara
-		pass
-	
+		if self.alarma<=0:
+			bala = Bala("imagenes/nivel 1/bala.png", self.rect.center, self.angulo)
+			self.balas_disparadas.append(bala)
+			self.frecuencia -= 50
+			if self.frecuencia<=50: self.frecuencia=500
+			self.alarma = self.frecuencia
+
 	def dibujar_Balas(self, ventana):
 		for i in range(len(self.balas_disparadas)):
 			if self.balas_disparadas[i].actualizar(ventana):
 				self.balas_disparadas.pop(i)
 				break
+	
+	def destruir(self):
+		#if self.rect.colliderect()
+		return Explosion(self.rect.center)
 				
 class Bala(pygame.sprite.Sprite):
 	"""Objeto bala general para todos los objetos que disparan"""
@@ -177,7 +192,22 @@ class Bala(pygame.sprite.Sprite):
 		ventana.blit(self.imagen, self.rect)
 		if self.rect.centerx > funciones.VENTANA[0] or self.rect.centerx < 0 or self.rect.centery > funciones.VENTANA[1] or self.rect.centery < 0:
 			return True	
+
+class Explosion(pygame.sprite.Sprite):
+	"""Objeto que representa la explosion de otro objeto"""
+	def __init__(self, posicion):
+		pygame.sprite.Sprite.__init__(self)
+		self.imagenes = funciones.agregar_imagen("imagenes/nivel 1/explosion.png", 192, 192)
+		self.rect = self.imagenes[0].get_rect()
+		self.rect.center = posicion
+		self.subimagen = 0
 		
+	def actualizar(self, ventana):
+		ventana.blit(self.imagenes[int(self.subimagen)], self.rect.center)
+		self.subimagen += 0.1
+		if self.subimagen >= len(self.imagenes)-1:
+			return True
+
 class Objeto_Bonus(pygame.sprite.Sprite):
 	"""Objeto recogible por el jugador"""
 	def __init__(self, pos, tp):
