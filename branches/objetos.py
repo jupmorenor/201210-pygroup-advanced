@@ -70,7 +70,7 @@ class Jugador_Control():
 		ventana.blit(self.puntos_img, self.puntos_rect)
 		ventana.blit(self.vidas_img, self.vidas_rect)
 		ventana.blit(self.balas_img, self.balas_rect)
-
+		
 class Base_de_Tanque(pygame.sprite.Sprite):
 	"""Objeto tanque del primer nivel"""
 	def __init__(self, ruta_img):
@@ -123,7 +123,7 @@ class Rotor_de_Tanque(pygame.sprite.Sprite, Jugador_Control):
 		if boton_mouse:
 			if self.balasPorDisparar>0:
 				bala = Bala("imagenes/nivel 1/bala.png", self.rect.center, self.angulo)
-				#self.disparo.play()
+				self.disparo.play()
 				self.balas_disparadas.append(bala)
 				self.balasPorDisparar-=1
 				
@@ -144,7 +144,7 @@ class Enemigo_Tanque(pygame.sprite.Sprite):
 		self.rect.center = self.posicion
 		self.disparo = funciones.cargar_sonido(ruta_snd)
 		self.velocidad = 0.5
-		self.frecuencia = random.randrange(250,500,1)
+		self.frecuencia = random.randrange(250,500)
 		self.alarma = self.frecuencia
 		self.objeto = random.randrange(1,7)
 		self.balas_disparadas=[]
@@ -162,6 +162,7 @@ class Enemigo_Tanque(pygame.sprite.Sprite):
 		if self.alarma<=0:
 			bala = Bala("imagenes/nivel 1/bala.png", self.rect.center, self.angulo)
 			self.balas_disparadas.append(bala)
+			self.disparo.play()
 			self.frecuencia -= 50
 			if self.frecuencia<=50: self.frecuencia=500
 			self.alarma = self.frecuencia
@@ -171,9 +172,17 @@ class Enemigo_Tanque(pygame.sprite.Sprite):
 			if self.balas_disparadas[i].actualizar(ventana):
 				self.balas_disparadas.pop(i)
 				break
+			
+	def darBonus(self):
+		bonus = random.randrange(1,20)
+		if bonus>5: bonus=0
+		if bonus!=0: objBonus=Objeto_Bonus(self.rect.center, bonus)
+		else: objBonus=None
+		return objBonus
 	
-	def destruir(self):
-		#if self.rect.colliderect()
+	def destruir(self, ob):
+		if self.rect.colliderect(ob):
+			pass
 		return Explosion(self.rect.center)
 				
 class Bala(pygame.sprite.Sprite):
@@ -203,8 +212,8 @@ class Explosion(pygame.sprite.Sprite):
 		self.subimagen = 0
 		
 	def actualizar(self, ventana):
-		ventana.blit(self.imagenes[int(self.subimagen)], self.rect.center)
-		self.subimagen += 0.1
+		ventana.blit(self.imagenes[int(self.subimagen)], self.rect)
+		self.subimagen += 0.2
 		if self.subimagen >= len(self.imagenes)-1:
 			return True
 
@@ -213,14 +222,15 @@ class Objeto_Bonus(pygame.sprite.Sprite):
 	def __init__(self, pos, tp):
 		pygame.sprite.Sprite.__init__(self)
 		self.tipo={1:"vida", 2:"balas", 3:"tiempo", 4:"bomba"}
-		self.imagen = funciones.cargar_imagen("imagenes/nivel 1/"+self.tipo[tp]+".png")
-		self.rect = self.imagen.get_rect()
-		self.rect.center = pos
+		if tp<= len(self.tipo):
+			self.imagen = funciones.cargar_imagen("imagenes/nivel 1/"+self.tipo[tp]+".png")
+			self.rect = self.imagen.get_rect()
+			self.rect.center = pos
 		
 		
 	def actualizar(self, ventana, otro):
 		ventana.blit(self.imagen, self.rect)
-		return self.rect.collideRect(otro)
+		return self.rect.colliderect(otro)
 	
 	def dar_Bonus(self, ventana, otro):
 		if self.actualizar(ventana, otro):
@@ -231,4 +241,4 @@ class Objeto_Bonus(pygame.sprite.Sprite):
 			elif self.tipo == 3:
 				return -10
 			elif self.tipo == 4:
-				return -1
+				return -1 
