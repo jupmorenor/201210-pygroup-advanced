@@ -21,7 +21,6 @@ from objetos import *
 class Nivel1():
 	def __init__(self):
 		self.funciones = Generales()
-		self.control = Jugador_Control()
 		self.ventana = pygame.display.set_mode(self.funciones.VENTANA)
 		self.imagen_fondo = self.funciones.cargar_imagen("imagenes/nivel 1/fondo_Nv_1.png")
 		self.musica_fondo = self.funciones.cargar_musica("sonido/CROSSFIRE BARRAGE.ogg")
@@ -30,33 +29,53 @@ class Nivel1():
 		self.pos_mouse = []
 		self.bot_mouse = 0
 		self.enemigos = []
+		self.bonuscreado=[]
 		self.explosiones = []
 		self.alarma = 30
-		
-		#self.enemigo=Enemigo_Tanque("imagenes/nivel 1/tanque_enemigo_Nv_1.png", "sonido/Explosion01.ogg")
 		
 	def controlEnemigos(self):
 		self.alarma -= 0.1
 		if self.alarma<=0:
-			xrandom = random.randrange(0,int(funciones.VENTANA[0]))
-			yrandom = random.randrange(0,int(funciones.VENTANA[1]))
-			enemigo=Enemigo_Tanque(xrandom, yrandom, "imagenes/nivel 1/tanque_enemigo_Nv_1.png", "sonido/Explosion01.ogg")
-			self.enemigos.append(enemigo)
-			self.alarma=30
+			xrandom = random.randrange(0,funciones.VENTANA[0])
+			yrandom = random.randrange(0,funciones.VENTANA[1])
+			if not (xrandom>0 and xrandom<funciones.VENTANA[0])and(yrandom>0 and yrandom<funciones.VENTANA[1]):
+				enemigo=Enemigo_Tanque(xrandom, yrandom, "imagenes/nivel 1/tanque_enemigo_Nv_1.png", "sonido/Explosion01.ogg")
+				self.enemigos.append(enemigo)
+				self.alarma=30
+		
+	def actualizarEnemigos(self):	
 		for i in range(len(self.enemigos)):
 			self.enemigos[i].actualizar(self.base_tanque.posicion)
 			self.enemigos[i].disparar()
 			self.ventana.blit(self.enemigos[i].postimagen, self.enemigos[i].rect)
-			#if self.enemigos[i].destruir():
-			#	sale=self.enemigos.pop(i)
-			#	explosion=Explosion(sale.rect.center)
-			#	self.explosiones.append(explosion)
+			self.enemigos[i].dibujar_Balas(self.ventana)
 		
 	def controlExplosiones(self):
 		for i in range(len(self.explosiones)):
 			if self.explosiones[i].actualizar(self.ventana):
 				self.explosiones.pop(i)
 				break
+			
+	def controlBonuses(self):
+		for i in range(len(self.bonuscreado)):
+			if self.bonuscreado[i]==None:
+				self.bonuscreado.pop(i)
+				break
+			elif self.bonuscreado[i].actualizar(self.ventana, self.base_tanque.rect):
+				self.bonuscreado.pop(i)
+				break
+				
+	def controlColisiones(self):
+		for i in range(len(self.rotor_tanque.balas_disparadas)):
+			for j in range(len(self.enemigos)):
+				if self.rotor_tanque.balas_disparadas[i].rect.colliderect(self.enemigos[j].rect):
+					self.bonuscreado.append(self.enemigos[j].darBonus())
+					sale=self.enemigos.pop(i)
+					self.rotor_tanque.balas_disparadas.pop(i)
+					explosion=Explosion(sale.rect.center)
+					self.explosiones.append(explosion)
+					self.rotor_tanque.puntajeNivel+=1
+					break
 				
 	def mainNivel1(self):
 		pygame.key.set_repeat(1,25)
@@ -76,16 +95,18 @@ class Nivel1():
 					self.base_tanque.actualizar(evento)
 				if evento.type == pygame.MOUSEBUTTONDOWN:
 					self.rotor_tanque.disparar(self.bot_mouse)
-		
-			#self.enemigo.actualizar(self.base_tanque.posicion)
-			#self.enemigo.disparar()	
-				
+ 
 			#Seccion de dibujo
 			self.ventana.blit(self.imagen_fondo, (0,0))
 			self.ventana.blit(self.base_tanque.postimagen, self.base_tanque.rect)
 			self.rotor_tanque.actualizar(self.pos_mouse, self.ventana, self.base_tanque.rect.center)
 			
+			self.controlBonuses()
 			self.controlEnemigos()
+			self.actualizarEnemigos()
+			self.controlExplosiones()
+			self.controlColisiones()
+			
 			self.rotor_tanque.dibujar_Balas(self.ventana)
 			self.rotor_tanque.actualizar1(self.ventana)
 			pygame.display.update()
