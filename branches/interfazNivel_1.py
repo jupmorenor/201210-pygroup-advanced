@@ -40,7 +40,6 @@ class Nivel1():
 			xrandom = random.randint(0,funciones.VENTANA[0])
 			yrandom = random.randint(0,funciones.VENTANA[1])
 			if not (xrandom>0 and xrandom<funciones.VENTANA[0])and(yrandom>0 and yrandom<funciones.VENTANA[1]):
-				#print(str(xrandom) +" , " + str(yrandom))
 				enemigo=Enemigo_Tanque(xrandom, yrandom, "imagenes/nivel 1/tanque_enemigo_Nv_1.png", "sonido/Explosion01.ogg")
 				self.enemigos.append(enemigo)
 				self.alarma=1
@@ -73,20 +72,18 @@ class Nivel1():
 			elif bonus.tipo==2:
 				self.rotor_tanque.balasPorDisparar+=5
 			elif bonus.tipo==3:
-				self.rotor_tanque.tiempo+=100
+				self.rotor_tanque.tiempo+=500
 			elif bonus.tipo==4:
 				j=0
 				for j in range(len(self.enemigos)):
-					print(j)
 					if(j!=0):
 						j=0
-						print(j)
 					self.rotor_tanque.puntajeNivel+=len(self.enemigos)
 					self.bonuscreado.append(self.enemigos[j].darBonus())
 					sale=self.enemigos.pop(j)
 					explosion=Explosion(sale.rect.center)
 					self.explosiones.append(explosion)
-				
+
 	def controlColisiones(self):
 		for i in range(len(self.rotor_tanque.balas_disparadas)):
 			for j in range(len(self.enemigos)):
@@ -108,7 +105,7 @@ class Nivel1():
 		while True:
 			self.pos_mouse = pygame.mouse.get_pos()
 			self.bot_mouse = pygame.mouse.get_pressed()
-			self.rotor_tanque.tiempo-=reloj.get_time()
+			self.rotor_tanque.tiempo-=1
 			
 			#Seccion de actualizacion de eventos
 			for evento in pygame.event.get():
