@@ -1,7 +1,6 @@
 
 
 
-
 import pygame
 import interfazNivel_1
 
@@ -18,13 +17,11 @@ class Boton(pygame.sprite.Sprite):
 		self.imagen1=imagen
 		self.rect= self.imagen1.get_rect()
 		self.rect.left,self.rect.top=(x,y)
-		
-#funcion main
-def principal():
+ class menu():
+  #funcion main
+  def principal():
     pygame.init() 
-        
-    
-    
+       
     pantalla=pygame.display.set_mode((500,400))
     
     pygame.display.set_caption("Juego") 
@@ -33,10 +30,11 @@ def principal():
     cursor1=Cursor()
     
     boton1= Boton(pygame.image.load("boton1.png"),200,100)#boton Interfaz nivel 1
-    boton2= Boton(pygame.image.load("boton2.png"),200,200)#boton Salir 
+    boton2= Boton(pygame.image.load("boton2.png"),200,200)#boton Cargar jugador Guardado
+    boton3= Boton(pygame.image.load("boton3.png"),200,200)#boton Salir
+    boton4= Boton(pygame.image.load("boton4.png"),200,200)#boton Ver Creditos
     
     blanco=(255,255,255) 
-    azul=(0,200,10)
     colorF=blanco
     
     salir=False
@@ -51,12 +49,16 @@ def principal():
             		nivel1=interfazNivel_1.Nivel1()
             		nivel1.mainNivel1()
             		salir=True
-            	else: colorF=blanco
-            	if cursor1.colliderect(boton2.rect):
-            		salir=True  		
-            	
-            if event.type == pygame.MOUSEBUTTONUP:
-            	colorF=blanco
+              if cursor1.colliderect(boton2.rect):
+                #aca toca hacer la sobre carga del metodo
+                import interfazNivel_1
+            		nivel1=interfazNivel_1.Nivel1()
+            		nivel1.mainNivel1()
+            		salir=True
+            	if cursor1.colliderect(boton3.rect):
+            		salir=True
+              if cursor1.colliderect(boton4.rect):
+                #ver creditos
         
         reloj1.tick(20)#operacion para que todo corra a 20fps
         cursor1.update()
@@ -68,4 +70,4 @@ def principal():
         
     pygame.quit()
     
-principal()
+
