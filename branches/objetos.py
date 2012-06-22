@@ -23,8 +23,9 @@ funciones = Generales()
 # ----------------------------------------------
 class Jugador_Control():
 	"""objeto controlador del momento del juego"""
-	def __init__(self):
+	def __init__(self, nombreJ):
 		"""definicion de algunas variables de tipo general"""
+    self.nombreJugador=nombreJ
 		self.puntajeTotal = 0
 		self.color_texto=[0,0,0]
 		self.puntajeNivel = 0
@@ -32,6 +33,16 @@ class Jugador_Control():
 		self.vida = 100
 		self.balasPorDisparar = 20
 		self.tiempo = 6000
+  def __init__(self, nombreJ, vidaJ, tiempoJ, balas):
+		"""definicion de algunas variables de tipo general"""
+    self.nombreJugador=nombreJ
+		self.puntajeTotal = 0
+		self.color_texto=[0,0,0]
+		self.puntajeNivel = 0
+		self.nivel = 0
+		self.vida = vidaJ
+		self.balasPorDisparar = balas
+		self.tiempo = tiempoJ
 		
 	def actualizar1(self, ventana):
 		"""dibujado en pantalla del texto"""
