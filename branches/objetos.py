@@ -23,7 +23,7 @@ funciones = Generales()
 # ----------------------------------------------
 class Jugador_Control():
 	"""objeto controlador del momento del juego"""
-	def __init__(self, nombreJ):
+	def __init__(self, nombreJ="Jugador"):
 		"""definicion de algunas variables de tipo general"""
     self.nombreJugador=nombreJ
 		self.puntajeTotal = 0
@@ -33,7 +33,7 @@ class Jugador_Control():
 		self.vida = 100
 		self.balasPorDisparar = 20
 		self.tiempo = 6000
-  def __init__(self, nombreJ, vidaJ, tiempoJ, balas):
+  def darValores(self, nombreJ, vidaJ, tiempoJ, balas):
 		"""definicion de algunas variables de tipo general"""
     self.nombreJugador=nombreJ
 		self.puntajeTotal = 0
@@ -87,9 +87,9 @@ class Base_de_Tanque(pygame.sprite.Sprite):
 		
 class Rotor_de_Tanque(pygame.sprite.Sprite, Jugador_Control):
 	"""Objeto tanque del primer nivel"""
-	def __init__(self, ruta_img, ruta_snd):
+	def __init__(self, ruta_img, ruta_snd,nombre):
 		pygame.sprite.Sprite.__init__(self)
-		Jugador_Control.__init__(self)
+		Jugador_Control.__init__(self, nombre)
 		self.preimagen = funciones.cargar_imagen(ruta_img)
 		self.postimagen = self.preimagen
 		self.rect = self.preimagen.get_rect()
