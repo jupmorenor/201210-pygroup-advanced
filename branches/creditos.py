@@ -19,9 +19,9 @@ from generales import Generales
 
 class Creditos():
 	
-	def __init__(self):
+	def __init__(self): #, ventana):
 		self.funciones = Generales()
-		self.ventana = pygame.display.set_mode(self.funciones.VENTANA)
+		self.ventana = pygame.display.set_mode(self.funciones.VENTANA) #ventana
 		self.imagen_fondo = self.funciones.cargar_imagen("imagenes/creditos.jpg")
 		self.musica_fondo = self.funciones.cargar_musica("sonido/SELAGINELLA.ogg")
 		self.color_texto=[255,255,255]
@@ -40,14 +40,9 @@ class Creditos():
 		while True:
 			
 			for evento in pygame.event.get():
-				if evento.type == pygame.QUIT:
+				if evento.type == pygame.QUIT  or evento.type == pygame.KEYDOWN:
 					pygame.mixer.music.stop()
 					return 0
-
-				elif evento.type == pygame.KEYDOWN:
-					if evento.key==pygame.K_ESCAPE:
-						pygame.mixer.music.stop()
-						return 0
 					
 			self.ventana.blit(self.imagen_fondo, (0,0))
 			self.ventana.blit(self.linea1_img, self.linea1_rect)
