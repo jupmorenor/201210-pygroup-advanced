@@ -96,7 +96,23 @@ class Nivel1():
 					self.rotor_tanque.puntajeNivel+=1
 					break
 			break
-				
+	 def persistencia(self, nombre):
+    nombreJ=nombre+".txt"
+    archivo=open(nombreJ,"w")
+    vidaJ=self.rotor_tanque.vida
+    tiempoJ=self.rotor_tanque.tiempo
+    balas=self.rotor_tanque.balasPorDisparar
+    lis=[nombre,vidaJ,tiempoJ,balas]
+    archivo.writelines(lis)
+    archivo.close()
+  def leerArchivo(self, nombre):
+    nombreJ=nombre+".txt"
+    archivo=open(nombreJ)
+    lis=archivo.readlines()
+    vidaJ=lis[1]
+    tiempoJ=lis[2]
+    balas=lis[3]    
+    
 	def mainNivel1(self):
 		reloj=pygame.time.Clock()
 		pygame.key.set_repeat(1,25)
@@ -111,6 +127,7 @@ class Nivel1():
 			for evento in pygame.event.get():
 				if evento.type == pygame.QUIT:
 					pygame.mixer.music.stop()
+          persistencia(self.rotor_tanque.nombre)
 					pygame.quit()
 					sys.exit()
 				elif evento.type == pygame.KEYDOWN:
