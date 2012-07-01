@@ -15,15 +15,13 @@ Created on 26/06/2012
 import pygame
 from generales import Generales
 
-
-
 class Creditos():
 	
-	def __init__(self): #, ventana):
+	def __init__(self, ventana):
 		self.funciones = Generales()
-		self.ventana = pygame.display.set_mode(self.funciones.VENTANA) #ventana
+		self.ventana = ventana
 		self.imagen_fondo = self.funciones.cargar_imagen("imagenes/creditos.jpg")
-		self.musica_fondo = self.funciones.cargar_musica("sonido/SELAGINELLA.ogg")
+		self.musica_fondo = "sonido/SELAGINELLA.ogg"
 		self.color_texto=[255,255,255]
 		self.linea1_img, self.linea1_rect = self.funciones.texto("JUEGO DESARROLLADO COMO PROYECTO DE", 400, 216, self.color_texto)
 		self.linea2_img, self.linea2_rect = self.funciones.texto("EL GRUPO DE TRABAJO PYGROUP", 400, 232, self.color_texto)
@@ -35,12 +33,13 @@ class Creditos():
 		self.linea8_img, self.linea8_rect = self.funciones.texto("AGRADECEMOS EL INCENTIVAR ESTAS ACTIVIDADES", 400, 360, self.color_texto)
 		
 	def mainCreditos(self):
+		self.funciones.cargar_musica(self.musica_fondo)
 		pygame.mixer.music.play(-1)
 
 		while True:
 			
 			for evento in pygame.event.get():
-				if evento.type == pygame.QUIT  or evento.type == pygame.KEYDOWN:
+				if evento.type == pygame.QUIT or evento.type == pygame.KEYDOWN:
 					pygame.mixer.music.stop()
 					return 0
 					
@@ -55,8 +54,3 @@ class Creditos():
 			self.ventana.blit(self.linea8_img, self.linea8_rect)
 			pygame.display.update()
 		return 0
-	
-def mainCreditos():
-	pygame.init()
-	creditos = Creditos()
-	creditos.mainCreditos()
