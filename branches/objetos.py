@@ -12,20 +12,33 @@
 Created on 10/05/2012
 @author: Juan Pablo Moreno y Alejandro Duarte
 '''
-import pygame, sys, random
+import pygame, random
 from pygame.locals import *
-from generales import *
+from generales import Generales
 
 funciones = Generales()
 
 # ----------------------------------------------
 # Clases
 # ----------------------------------------------
+class Cursor(pygame.Rect):
+	def __init__(self):
+		pygame.Rect.__init__(self,0,0,1,1)
+		
+	def actualizar(self):
+		self.left, self.top = pygame.mouse.get_pos()
+		
+class Boton(pygame.sprite.Sprite):
+	def __init__(self, img, x, y):
+		self.imagen = img
+		self.rect = self.imagen.get_rect()
+		self.rect.left, self.rect.top = (x, y)
+
 class Jugador_Control():
 	"""objeto controlador del momento del juego"""
-	def __init__(self, nombreJ="Jugador"):
+	def __init__(self, nombreJ = "Jugador"):
 		"""definicion de algunas variables de tipo general"""
-    self.nombreJugador=nombreJ
+		self.nombreJugador = nombreJ
 		self.puntajeTotal = 0
 		self.color_texto=[0,0,0]
 		self.puntajeNivel = 0
@@ -33,15 +46,16 @@ class Jugador_Control():
 		self.vida = 100
 		self.balasPorDisparar = 20
 		self.tiempo = 6000
-  def darValores(self, nombreJ, vidaJ, tiempoJ, balas):
-		"""definicion de algunas variables de tipo general"""
-    self.nombreJugador=nombreJ
+		
+	def darValores(self, nombreJ, vidaJ, tiempoJ, balasJ, puntaje):
+		"""Realiza la persistencia de los datos"""
+		self.nombreJugador = nombreJ
 		self.puntajeTotal = 0
 		self.color_texto=[0,0,0]
-		self.puntajeNivel = 0
+		self.puntajeNivel = puntaje
 		self.nivel = 0
 		self.vida = vidaJ
-		self.balasPorDisparar = balas
+		self.balasPorDisparar = balasJ
 		self.tiempo = tiempoJ
 		
 	def actualizar1(self, ventana):
@@ -67,9 +81,6 @@ class Base_de_Tanque(pygame.sprite.Sprite):
 		self.velocidad = 5
 			
 	def actualizar(self, evento):
-		if evento.key==K_ESCAPE:
-			pygame.quit()
-			sys.exit()
 		if evento.key==K_UP:
 			self.posicion[1]-=self.velocidad
 			self.postimagen=pygame.transform.rotate(self.preimagen,90)
@@ -87,7 +98,7 @@ class Base_de_Tanque(pygame.sprite.Sprite):
 		
 class Rotor_de_Tanque(pygame.sprite.Sprite, Jugador_Control):
 	"""Objeto tanque del primer nivel"""
-	def __init__(self, ruta_img, ruta_snd,nombre):
+	def __init__(self, ruta_img, ruta_snd, nombre):
 		pygame.sprite.Sprite.__init__(self)
 		Jugador_Control.__init__(self, nombre)
 		self.preimagen = funciones.cargar_imagen(ruta_img)
@@ -152,11 +163,15 @@ class Enemigo_Tanque(pygame.sprite.Sprite):
 			if self.frecuencia<=50: self.frecuencia=500
 			self.alarma = self.frecuencia
 
-	def dibujar_Balas(self, ventana):
+	def dibujar_Balas(self, ventana, otro):
 		for i in range(len(self.balas_disparadas)):
 			if self.balas_disparadas[i].actualizar(ventana):
 				self.balas_disparadas.pop(i)
 				break
+			if self.balas_disparadas[i].rect.colliderect(otro):
+				self.balas_disparadas.pop(i)
+				return True
+		
 			
 	def darBonus(self):
 		bonus = random.randint(1,20)
