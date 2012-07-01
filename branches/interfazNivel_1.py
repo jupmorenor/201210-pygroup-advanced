@@ -13,20 +13,19 @@ Created on 10/05/2012
 '''
 
 import pygame
-import sys
 from pygame.locals import *
-from generales import *
+from generales import Generales
 from objetos import *
 
 class Nivel1():
 	"""Escena numero 1 del juego"""
-	def __init__(self):
+	def __init__(self, pantalla):
 		self.funciones = Generales()
-		self.ventana = pygame.display.set_mode(self.funciones.VENTANA)
+		self.ventana = pantalla #pygame.display.set_mode(self.funciones.VENTANA)
 		self.imagen_fondo = self.funciones.cargar_imagen("imagenes/nivel 1/fondo_Nv_1.png")
-		self.musica_fondo = self.funciones.cargar_musica("sonido/CROSSFIRE BARRAGE.ogg")
+		self.musica_fondo = "sonido/CROSSFIRE BARRAGE.ogg"
 		self.base_tanque = Base_de_Tanque("imagenes/nivel 1/tanque_base_Nv_1.png")
-		self.rotor_tanque = Rotor_de_Tanque("imagenes/nivel 1/tanque_rotor_Nv_1.png", "sonido/Explosion01.ogg")
+		self.rotor_tanque = Rotor_de_Tanque("imagenes/nivel 1/tanque_rotor_Nv_1.png", "sonido/Explosion01.ogg", "Tanque 1")
 		self.pos_mouse = []
 		self.bot_mouse = 0
 		self.enemigos = []
@@ -49,7 +48,9 @@ class Nivel1():
 			self.enemigos[i].actualizar(self.base_tanque.posicion)
 			self.enemigos[i].disparar()
 			self.ventana.blit(self.enemigos[i].postimagen, self.enemigos[i].rect)
-			self.enemigos[i].dibujar_Balas(self.ventana)
+			if self.enemigos[i].dibujar_Balas(self.ventana, self.base_tanque.rect):
+				self.rotor_tanque.vida-=20
+			
 		
 	def controlExplosiones(self):
 		for i in range(len(self.explosiones)):
@@ -96,26 +97,32 @@ class Nivel1():
 					self.rotor_tanque.puntajeNivel+=1
 					break
 			break
-	 def persistencia(self, nombre):
-    nombreJ=nombre+".txt"
-    archivo=open(nombreJ,"w")
-    vidaJ=self.rotor_tanque.vida
-    tiempoJ=self.rotor_tanque.tiempo
-    balas=self.rotor_tanque.balasPorDisparar
-    lis=[nombre,vidaJ,tiempoJ,balas]
-    archivo.writelines(lis)
-    archivo.close()
-  def leerArchivo(self, nombre):
-    nombreJ=nombre+".txt"
-    archivo=open(nombreJ)
-    lis=archivo.readlines()
-    vidaJ=lis[1]
-    tiempoJ=lis[2]
-    balas=lis[3]    
-    
+		
+	def guardarDatos(self, nombre):
+		nombreJ = nombre + ".txt"
+		try: archivo = open(nombreJ, "w")
+		except(IOError):
+			print("No hay datos registrados con ese nombre")
+		vidaJ = self.rotor_tanque.vida
+		tiempoJ = self.rotor_tanque.tiempo
+		balasJ = self.rotor_tanque.balasPorDisparar
+		lis = [nombreJ+" ", str(vidaJ)+" ", str(tiempoJ)+" ", str(balasJ)]
+		archivo.writelines(lis)
+		archivo.close
+		
+	def cargarDatos(self, nombre):
+		nombreJ = nombre + ".txt"
+		archivo = open(nombreJ)
+		lis = archivo.readlines()
+		print(lis)
+		self.rotor_tanque.vida = int(lis[1])
+		self.rotor_tanque.tiempo = int(lis[2])
+		self.rotor_tanque.balasPorDisparar = int(lis[3])
+				
 	def mainNivel1(self):
 		reloj=pygame.time.Clock()
 		pygame.key.set_repeat(1,25)
+		self.funciones.cargar_musica(self.musica_fondo)
 		pygame.mixer.music.play(-1)
 		
 		while True:
@@ -125,16 +132,15 @@ class Nivel1():
 			
 			#Seccion de actualizacion de eventos
 			for evento in pygame.event.get():
-				if evento.type == pygame.QUIT:
+				if evento.type == pygame.QUIT or evento.type == pygame.K_ESCAPE:
 					pygame.mixer.music.stop()
-          persistencia(self.rotor_tanque.nombre)
-					pygame.quit()
-					sys.exit()
+					self.guardarDatos(self.rotor_tanque.nombreJugador)
+					return 0
 				elif evento.type == pygame.KEYDOWN:
 					self.base_tanque.actualizar(evento)
 				if evento.type == pygame.MOUSEBUTTONDOWN:
 					self.rotor_tanque.disparar(self.bot_mouse)
- 
+					
 			#Seccion de dibujo
 			self.ventana.blit(self.imagen_fondo, (0,0))
 			self.ventana.blit(self.base_tanque.postimagen, self.base_tanque.rect)
@@ -152,9 +158,3 @@ class Nivel1():
 			reloj.tick(60)
 			
 		return 0
-
-###pruebas
-if __name__ == '__main__':
-	pygame.init()
-	nivel1=Nivel1()
-	nivel1.mainNivel1()
