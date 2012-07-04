@@ -10,7 +10,7 @@
 #       GNU General Public License for more details.
 '''
 Created on 27/06/2012
-@author: Juanpa y Yami
+@author: Juan Pablo Moreno y Alejandro Duarte
 '''
 import pygame
 from generales import Generales
@@ -43,7 +43,7 @@ class GameOver():
 		while True:
 			
 			if self.alpha<=255:
-				self.alpha+=0.02
+				self.alpha+=0.05
 				self.blit_alpha(self.ventana, self.imagen_fondo, (0,0), int(self.alpha))
 			
 			for evento in pygame.event.get():
