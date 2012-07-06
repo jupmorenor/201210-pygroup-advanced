@@ -48,7 +48,7 @@ class GameOver():
 				self.blit_alpha(self.ventana, self.imagen_fondo, (0,0), int(self.alpha))
 			
 			for evento in pygame.event.get():
-				if evento.type == pygame.QUIT or evento.type == pygame.KEYDOWN:
+				if (evento.type == pygame.QUIT or evento.type == pygame.KEYDOWN) and self.alpha>=100:
 					pygame.mixer.music.stop()
 					return 0
 			
