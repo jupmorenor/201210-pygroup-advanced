@@ -10,7 +10,7 @@
 #       GNU General Public License for more details.
 '''
 Created on 30/06/2012
-@author: Juanpa y Yami
+@author: Juan Pablo Moreno y Alejandro Duarte
 '''
 import pygame
 import sys
@@ -26,11 +26,11 @@ class UDTanks():
 		self.ventana = pygame.display.set_mode(self.funciones.VENTANA)
 		self.imagen_fondo = self.funciones.cargar_imagen("imagenes/menu.jpg")
 		self.musica_fondo = "sonido/TWIN CRESCENT.ogg"
-		self.empezar = Boton(self.funciones.cargar_imagen("imagenes/boton1.png"),200,100)#boton para nivel 1
-		self.continuar = Boton(self.funciones.cargar_imagen("imagenes/boton2.png"),200,150)#boton Cargar jugador Guardado
-		self.puntajes = Boton(self.funciones.cargar_imagen("imagenes/boton3.png"),200,200)#boton ver puntajes
-		self.creditos = Boton(self.funciones.cargar_imagen("imagenes/boton4.png"),200,250)#boton ver creditos
-		self.salir = Boton(self.funciones.cargar_imagen("imagenes/boton5.png"),200,300)#boton salir 
+		self.empezar = Boton(self.funciones.cargar_imagen("imagenes/boton1.png"),125,450)#boton para nivel 1
+		self.continuar = Boton(self.funciones.cargar_imagen("imagenes/boton2.png"),325,450)#boton Cargar jugador Guardado
+		self.puntajes = Boton(self.funciones.cargar_imagen("imagenes/boton3.png"),525,450)#boton ver puntajes
+		self.creditos = Boton(self.funciones.cargar_imagen("imagenes/boton4.png"),225,500)#boton ver creditos
+		self.salir = Boton(self.funciones.cargar_imagen("imagenes/boton5.png"),425,500)#boton salir 
 		self.cursor = Cursor()
 		
 	def ejecutar(self):
@@ -38,7 +38,7 @@ class UDTanks():
 		pygame.display.set_caption("UDTanks") 
 		self.funciones.cargar_musica(self.musica_fondo)
 		pygame.mixer.music.play(-1)
-		
+		reloj=pygame.time.Clock()
 		
 		while True:
 			
@@ -50,22 +50,27 @@ class UDTanks():
 				elif evento.type == pygame.MOUSEBUTTONDOWN:
 					if self.cursor.colliderect(self.empezar):
 						pygame.mixer.music.stop()
-						nivelEnEjecucion = Nivel1(self.ventana)
+						nombre = self.funciones.leerDatos()
+						nivelEnEjecucion = Nivel1(self.ventana, nombre)
 						nivelEnEjecucion.mainNivel1() # ejecuta el nivel 1
 						self.funciones.cargar_musica(self.musica_fondo)
 						pygame.mixer.music.play(-1)
+						
 					elif self.cursor.colliderect(self.continuar):
 						pygame.mixer.music.stop()
-						nivelEnEjecucion = Nivel1(self.ventana)
-						nivelEnEjecucion.cargarDatos("Tanque 1")# carga los datos guardados
+						nombre = self.funciones.leerDatos() 
+						nivelEnEjecucion = Nivel1(self.ventana, nombre)
+						nivelEnEjecucion.cargarDatos(nombre)# carga los datos guardados
 						nivelEnEjecucion.mainNivel1()
 						self.funciones.cargar_musica(self.musica_fondo)
 						pygame.mixer.music.play(-1)
+						
 					elif self.cursor.colliderect(self.puntajes):
 						#pygame.mixer.music.stop()
 						pass#por implementar
 						#self.funciones.cargar_musica(self.musica_fondo)
 						#pygame.mixer.music.play(-1)
+                  
 					elif self.cursor.colliderect(self.creditos):
 						pygame.mixer.music.stop()
 						from creditos import Creditos
@@ -73,6 +78,7 @@ class UDTanks():
 						nivelEnEjecucion2.mainCreditos() # abre la ventana de creditos
 						self.funciones.cargar_musica(self.musica_fondo)
 						pygame.mixer.music.play(-1)
+						
 					elif self.cursor.colliderect(self.salir):
 						pygame.mixer.music.stop()
 						pygame.quit()
@@ -86,6 +92,7 @@ class UDTanks():
 			self.ventana.blit(self.creditos.imagen, self.creditos.rect)
 			self.ventana.blit(self.salir.imagen, self.salir.rect)
 			pygame.display.update()
+			reloj.tick(30)
 		return 0
 	
 if __name__ == '__main__':
