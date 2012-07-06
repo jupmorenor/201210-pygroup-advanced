@@ -19,19 +19,20 @@ from objetos import *
 
 class Nivel1():
 	"""Escena numero 1 del juego"""
-	def __init__(self, pantalla):
+	def __init__(self, pantalla, nombre):
 		self.funciones = Generales()
 		self.ventana = pantalla #pygame.display.set_mode(self.funciones.VENTANA)
 		self.imagen_fondo = self.funciones.cargar_imagen("imagenes/nivel 1/fondo_Nv_1.png")
 		self.musica_fondo = "sonido/CROSSFIRE BARRAGE.ogg"
 		self.base_tanque = Base_de_Tanque("imagenes/nivel 1/tanque_base_Nv_1.png")
-		self.rotor_tanque = Rotor_de_Tanque("imagenes/nivel 1/tanque_rotor_Nv_1.png", "sonido/Explosion01.ogg", "Tanque 1")
+		self.rotor_tanque = Rotor_de_Tanque("imagenes/nivel 1/tanque_rotor_Nv_1.png", "sonido/Explosion01.ogg", nombre)
 		self.pos_mouse = []
 		self.bot_mouse = 0
 		self.enemigos = []
 		self.bonuscreado=[]
 		self.explosiones = []
 		self.alarma = 1
+		self.salir =False
 		
 	def controlEnemigos(self):
 		self.alarma -= 0.1
@@ -106,18 +107,33 @@ class Nivel1():
 		vidaJ = self.rotor_tanque.vida
 		tiempoJ = self.rotor_tanque.tiempo
 		balasJ = self.rotor_tanque.balasPorDisparar
-		lis = [nombreJ+" ", str(vidaJ)+" ", str(tiempoJ)+" ", str(balasJ)]
-		archivo.writelines(lis)
+		puntajeJ = self.rotor_tanque.puntajeNivel
+		archivo.write(str(vidaJ)+"\n")
+		archivo.write(str(tiempoJ)+"\n")
+		archivo.write(str(balasJ)+"\n")
+		archivo.write(str(puntajeJ)+"\n")
 		archivo.close
 		
 	def cargarDatos(self, nombre):
 		nombreJ = nombre + ".txt"
-		archivo = open(nombreJ)
-		lis = archivo.readlines()
-		print(lis)
-		self.rotor_tanque.vida = int(lis[1])
-		self.rotor_tanque.tiempo = int(lis[2])
-		self.rotor_tanque.balasPorDisparar = int(lis[3])
+		try:
+			archivo = open(nombreJ)
+			lis = archivo.readlines()
+			self.rotor_tanque.vida = int(lis[0])
+			self.rotor_tanque.tiempo = int(lis[1])
+			self.rotor_tanque.balasPorDisparar = int(lis[2])
+		except(IOError):
+			print("No hay datos registrados con ese nombre")
+				
+	def terminarJuego(self):
+		if self.rotor_tanque.vida <= 0 or self.rotor_tanque.tiempo<=0:
+			pygame.mixer.music.stop()
+			from gameOver import GameOver
+			terminar = GameOver(self.ventana)
+			terminar.mainGameOver()
+			return True
+		else:
+			return False
 				
 	def mainNivel1(self):
 		reloj=pygame.time.Clock()
@@ -129,6 +145,9 @@ class Nivel1():
 			self.pos_mouse = pygame.mouse.get_pos()
 			self.bot_mouse = pygame.mouse.get_pressed()
 			self.rotor_tanque.tiempo-=1
+			self.salir = self.terminarJuego()
+			if self.salir == True:
+				return 0
 			
 			#Seccion de actualizacion de eventos
 			for evento in pygame.event.get():
@@ -140,7 +159,6 @@ class Nivel1():
 					self.base_tanque.actualizar(evento)
 				if evento.type == pygame.MOUSEBUTTONDOWN:
 					self.rotor_tanque.disparar(self.bot_mouse)
-					
 			#Seccion de dibujo
 			self.ventana.blit(self.imagen_fondo, (0,0))
 			self.ventana.blit(self.base_tanque.postimagen, self.base_tanque.rect)
@@ -155,6 +173,6 @@ class Nivel1():
 			self.rotor_tanque.dibujar_Balas(self.ventana)
 			self.rotor_tanque.actualizar1(self.ventana)
 			pygame.display.update()
-			reloj.tick(60)
+			reloj.tick(30)
 			
 		return 0
