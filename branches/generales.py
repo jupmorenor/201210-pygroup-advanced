@@ -12,8 +12,9 @@ Created on 10/05/2012
 @author: Juan Pablo Moreno y Alejandro Duarte
 '''
 
-import pygame
-from pygame.locals import*
+import pygame 
+from tkinter import *
+from pygame.locals import *
 from math import degrees, radians, sin, cos, atan2
 
 class Generales():
@@ -21,6 +22,31 @@ class Generales():
 	"""Constantes para uso general de cualquier objeto"""
 	def __init__(self):
 		self.VENTANA=self.ANCHO,self.ALTO=800,600
+		
+	def leerDatos(self):
+		self.nombre=""
+		def salir():
+			root.quit()
+	
+		def cargarArchivo():
+			self.nombre=a.get()
+			root.destroy()
+	
+		def obtenerN():
+			n=a.get()
+			return (n)
+		
+		root = Tk()
+		root.title('CargarDatos')
+		a = StringVar()
+		atxt = Entry(root, textvariable=a,width=20)
+		cargar = Button(root, text="Cargar Archivo", command=cargarArchivo,width=15)
+		salirB= Button(root, text ="Salir", command=root.destroy, width=10)
+		atxt.grid(row=0, column=0)
+		cargar.grid(row=1, column=0)
+		salirB.grid(row=1,column=1)
+		root.mainloop()
+		return (obtenerN())
 	
 	"""Funciones para uso general de cualquier objeto"""
 	def cargar_imagen(self, ruta):
