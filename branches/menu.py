@@ -32,6 +32,7 @@ class UDTanks():
 		self.creditos = Boton(self.funciones.cargar_imagen("imagenes/boton4.png"),225,500)#boton ver creditos
 		self.salir = Boton(self.funciones.cargar_imagen("imagenes/boton5.png"),425,500)#boton salir 
 		self.cursor = Cursor()
+		self.nivelEnEjecucion = None
 		
 	def ejecutar(self):
 		pygame.init()
@@ -51,37 +52,39 @@ class UDTanks():
 					if self.cursor.colliderect(self.empezar):
 						pygame.mixer.music.stop()
 						nombre = self.funciones.leerDatos()
-						nivelEnEjecucion = Nivel1(self.ventana, nombre)
-						nivelEnEjecucion.mainNivel1() # ejecuta el nivel 1
+						self.nivelEnEjecucion = Nivel1(self.ventana, nombre)
+						self.nivelEnEjecucion.mainNivel1() # ejecuta el nivel 1
 						self.funciones.cargar_musica(self.musica_fondo)
 						pygame.mixer.music.play(-1)
 						
 					elif self.cursor.colliderect(self.continuar):
 						pygame.mixer.music.stop()
 						nombre = self.funciones.leerDatos() 
-						nivelEnEjecucion = Nivel1(self.ventana, nombre)
-						nivelEnEjecucion.cargarDatos(nombre)# carga los datos guardados
-						nivelEnEjecucion.mainNivel1()
+						self.nivelEnEjecucion = Nivel1(self.ventana, nombre)
+						self.nivelEnEjecucion.cargarDatos(nombre)# carga los datos guardados
+						self.nivelEnEjecucion.mainNivel1()
 						self.funciones.cargar_musica(self.musica_fondo)
 						pygame.mixer.music.play(-1)
 						
 					elif self.cursor.colliderect(self.puntajes):
-						#pygame.mixer.music.stop()
-						pass#por implementar
-						#self.funciones.cargar_musica(self.musica_fondo)
-						#pygame.mixer.music.play(-1)
-                  
+						pygame.mixer.music.stop()
+						from puntajes import Puntajes
+						self.nivelEnEjecucion = Puntajes(self.ventana)
+						self.nivelEnEjecucion.mainPuntajes() # muestra la ventana de puntajes
+						self.funciones.cargar_musica(self.musica_fondo)
+						pygame.mixer.music.play(-1)
+					
 					elif self.cursor.colliderect(self.creditos):
 						pygame.mixer.music.stop()
 						from creditos import Creditos
-						nivelEnEjecucion2 = Creditos(self.ventana)
-						nivelEnEjecucion2.mainCreditos() # abre la ventana de creditos
+						self.nivelEnEjecucion = Creditos(self.ventana)
+						self.nivelEnEjecucion.mainCreditos() # abre la ventana de creditos
 						self.funciones.cargar_musica(self.musica_fondo)
 						pygame.mixer.music.play(-1)
 						
 					elif self.cursor.colliderect(self.salir):
 						pygame.mixer.music.stop()
-						pygame.quit()
+						pygame.quit() # cierra el juego
 						sys.exit()
 			
 			self.cursor.actualizar()
