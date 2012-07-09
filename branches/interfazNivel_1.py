@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
 #       the Free Software Foundation; either version 2 of the License, or
@@ -101,9 +102,7 @@ class Nivel1():
 		
 	def guardarDatos(self, nombre):
 		nombreJ = nombre + ".txt"
-		try: archivo = open(nombreJ, "w")
-		except(IOError):
-			print("No hay datos registrados con ese nombre")
+		archivo = open(nombreJ, "w")
 		vidaJ = self.rotor_tanque.vida
 		tiempoJ = self.rotor_tanque.tiempo
 		balasJ = self.rotor_tanque.balasPorDisparar
@@ -112,7 +111,7 @@ class Nivel1():
 		archivo.write(str(tiempoJ)+"\n")
 		archivo.write(str(balasJ)+"\n")
 		archivo.write(str(puntajeJ)+"\n")
-		archivo.close
+		archivo.close()
 		
 	def cargarDatos(self, nombre):
 		nombreJ = nombre + ".txt"
@@ -122,12 +121,19 @@ class Nivel1():
 			self.rotor_tanque.vida = int(lis[0])
 			self.rotor_tanque.tiempo = int(lis[1])
 			self.rotor_tanque.balasPorDisparar = int(lis[2])
+			self.rotor_tanque.puntajeNivel = int(lis[3])
+			archivo.close()
 		except(IOError):
 			print("No hay datos registrados con ese nombre")
 				
 	def terminarJuego(self):
 		if self.rotor_tanque.vida <= 0 or self.rotor_tanque.tiempo<=0:
 			pygame.mixer.music.stop()
+			try:
+				puntajes = open("puntajes.txt", 'a')
+				puntajes.writelines(str(self.rotor_tanque.nombreJugador)+"\t\t"+str(self.rotor_tanque.puntajeNivel)+"\n")
+				puntajes.close()
+			except(IOError): pass
 			from gameOver import GameOver
 			terminar = GameOver(self.ventana)
 			terminar.mainGameOver()
