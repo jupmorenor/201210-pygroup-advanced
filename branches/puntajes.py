@@ -29,6 +29,7 @@ class Puntajes():
 		try:
 			puntajes = open("puntajes.txt", 'r')
 			lista = puntajes.readlines()
+			puntajes.close()
 		except(IOError):	
 			lista = "NO SE ENCONTRARON PUNTAJES REGISTRADOS"
 		return lista
