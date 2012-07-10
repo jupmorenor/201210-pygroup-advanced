@@ -20,7 +20,7 @@ class GameOver():
 	
 	def __init__(self, ventana):
 		self.funciones = Generales()
-		self.ventana = ventana  #pygame.display.set_mode(self.funciones.VENTANA) 
+		self.ventana = ventana #pygame.display.set_mode(self.funciones.VENTANA) 
 		self.imagen = randint(1,3)
 		self.imagen_fondo = self.funciones.cargar_imagen("imagenes/game over "+str(self.imagen)+".jpg")#final con imagen aleatoria
 		self.musica_fondo = "sonido/PUPPET OF THE MAGUS.ogg"
@@ -28,7 +28,7 @@ class GameOver():
 		self.imagen_fondo.set_alpha(self.alpha)
 		
 	def blit_alpha(self, ventana, imagen, ubicacion, opacidad):
-    """Metodo que controla la transparencia del fade-in"""
+		"""Metodo que controla la transparencia del fade-in"""
 		x = ubicacion[0]
 		y = ubicacion[1]
 		temp = pygame.Surface((imagen.get_width(), imagen.get_height())).convert()
@@ -48,10 +48,10 @@ class GameOver():
 				self.blit_alpha(self.ventana, self.imagen_fondo, (0,0), int(self.alpha))
 			
 			for evento in pygame.event.get():
-				if (evento.type == pygame.QUIT or evento.type == pygame.KEYDOWN) and self.alpha>=100:
+				if (evento.type == pygame.QUIT or evento.type == pygame.KEYDOWN) and self.alpha>=50:
 					pygame.mixer.music.stop()
 					return 0
 			
 			pygame.display.update()
 			
-		return 0 
+		return 0
