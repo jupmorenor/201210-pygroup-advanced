@@ -15,15 +15,13 @@ Created on 30/06/2012
 import pygame
 import sys
 from generales import Generales
-from nivel_1 import Nivel1
 from objetos import Cursor, Boton
 
-class UDTanks():
+class Menu_UDTanks():
 	
-	def __init__(self):
-		pygame.init()
+	def __init__(self, pantalla):
 		self.funciones = Generales()
-		self.ventana = pygame.display.set_mode(self.funciones.VENTANA)
+		self.ventana = pantalla
 		self.imagen_fondo = self.funciones.cargar_imagen("imagenes/menu.jpg")
 		self.musica_fondo = "sonido/TWIN CRESCENT.ogg"
 		self.empezar = Boton(self.funciones.cargar_imagen("imagenes/boton1.png"),125,450)#boton para nivel 1
@@ -34,9 +32,7 @@ class UDTanks():
 		self.cursor = Cursor()
 		self.nivelEnEjecucion = None
 		
-	def ejecutar(self):
-		pygame.init()
-		pygame.display.set_caption("UDTanks") 
+	def mainMenu(self): 
 		self.funciones.cargar_musica(self.musica_fondo)
 		pygame.mixer.music.play(-1)
 		reloj=pygame.time.Clock()
@@ -50,37 +46,55 @@ class UDTanks():
 					sys.exit()
 				elif evento.type == pygame.MOUSEBUTTONDOWN:
 					if self.cursor.colliderect(self.empezar):
-						pygame.mixer.music.stop()
-						nombre = self.funciones.leerDatos()
-						self.nivelEnEjecucion = Nivel1(self.ventana, nombre)
-						self.nivelEnEjecucion.mainNivel1() # ejecuta el nivel 1
-						self.funciones.cargar_musica(self.musica_fondo)
-						pygame.mixer.music.play(-1)
-						
+						try: 
+							import nivel_1
+							nombre = self.funciones.leerDatos()
+							self.nivelEnEjecucion = nivel_1.Nivel1(self.ventana, nombre)
+							pygame.mixer.music.stop()
+							self.nivelEnEjecucion.mainNivel1() # ejecuta el nivel 1
+							self.nivelEnEjecucion = None
+							self.funciones.cargar_musica(self.musica_fondo)
+							pygame.mixer.music.play(-1)
+						except(ImportError):
+							print("No se encuentra el módulo correspondeinte")
+							
 					elif self.cursor.colliderect(self.continuar):
-						pygame.mixer.music.stop()
-						nombre = self.funciones.leerDatos() 
-						self.nivelEnEjecucion = Nivel1(self.ventana, nombre)
-						self.nivelEnEjecucion.cargarDatos(nombre)# carga los datos guardados
-						self.nivelEnEjecucion.mainNivel1()
-						self.funciones.cargar_musica(self.musica_fondo)
-						pygame.mixer.music.play(-1)
-						
+						try:
+							import nivel_1
+							nombre = self.funciones.leerDatos() 
+							self.nivelEnEjecucion = nivel_1.Nivel1(self.ventana, nombre)
+							self.nivelEnEjecucion.cargarDatos(nombre)# carga los datos guardados
+							pygame.mixer.music.stop()
+							self.nivelEnEjecucion.mainNivel1()
+							self.nivelEnEjecucion = None
+							self.funciones.cargar_musica(self.musica_fondo)
+							pygame.mixer.music.play(-1)	
+						except(ImportError):
+							print("No se encuentra el módulo correspondeinte")
+									
 					elif self.cursor.colliderect(self.puntajes):
-						pygame.mixer.music.stop()
-						from puntajes import Puntajes
-						self.nivelEnEjecucion = Puntajes(self.ventana)
-						self.nivelEnEjecucion.mainPuntajes() # muestra la ventana de puntajes
-						self.funciones.cargar_musica(self.musica_fondo)
-						pygame.mixer.music.play(-1)
+						try:
+							import puntajes
+							self.nivelEnEjecucion = puntajes.Puntajes(self.ventana)
+							pygame.mixer.music.stop()
+							self.nivelEnEjecucion.mainPuntajes() # muestra la ventana de puntajes
+							self.nivelEnEjecucion = None
+							self.funciones.cargar_musica(self.musica_fondo)
+							pygame.mixer.music.play(-1)
+						except(ImportError):
+							print("No se encuentra el módulo correspondeinte")
 					
 					elif self.cursor.colliderect(self.creditos):
-						pygame.mixer.music.stop()
-						from creditos import Creditos
-						self.nivelEnEjecucion = Creditos(self.ventana)
-						self.nivelEnEjecucion.mainCreditos() # abre la ventana de creditos
-						self.funciones.cargar_musica(self.musica_fondo)
-						pygame.mixer.music.play(-1)
+						try:
+							import creditos
+							self.nivelEnEjecucion = creditos.Creditos(self.ventana)
+							pygame.mixer.music.stop()
+							self.nivelEnEjecucion.mainCreditos() # abre la ventana de creditos
+							self.nivelEnEjecucion = None
+							self.funciones.cargar_musica(self.musica_fondo)
+							pygame.mixer.music.play(-1)
+						except(ImportError):
+							print("No se encuentra el módulo correspondeinte")
 						
 					elif self.cursor.colliderect(self.salir):
 						pygame.mixer.music.stop()
@@ -95,9 +109,5 @@ class UDTanks():
 			self.ventana.blit(self.creditos.imagen, self.creditos.rect)
 			self.ventana.blit(self.salir.imagen, self.salir.rect)
 			pygame.display.update()
-			reloj.tick(30)
+			reloj.tick(60)
 		return 0
-	
-if __name__ == '__main__':
-	juego = UDTanks()
-	juego.ejecutar()
