@@ -129,15 +129,22 @@ class Nivel1():
 	def terminarJuego(self):
 		if self.rotor_tanque.vida <= 0 or self.rotor_tanque.tiempo<=0:
 			pygame.mixer.music.stop()
+			if 	self.rotor_tanque.puntajeNivel > 0:
+				try:
+					puntajes = open("puntajes.txt", 'a')
+					puntajes.writelines(str(self.rotor_tanque.nombreJugador)+"\t\t"+str(self.rotor_tanque.puntajeNivel)+"\n")
+					puntajes.close()
+				except(IOError): 
+					pass
+			
 			try:
-				puntajes = open("puntajes.txt", 'a')
-				puntajes.writelines(str(self.rotor_tanque.nombreJugador)+"\t\t"+str(self.rotor_tanque.puntajeNivel)+"\n")
-				puntajes.close()
-			except(IOError): pass
-			from gameOver import GameOver
-			terminar = GameOver(self.ventana)
-			terminar.mainGameOver()
-			return True
+				import gameOver
+				terminar = gameOver.GameOver(self.ventana)
+				terminar.mainGameOver()
+				return True
+			except(ImportError):
+				print("No se encuentra el módulo correspondiente")
+				return True
 		else:
 			return False
 				
@@ -164,7 +171,8 @@ class Nivel1():
 				elif evento.type == pygame.KEYDOWN:
 					self.base_tanque.actualizar(evento)
 				if evento.type == pygame.MOUSEBUTTONDOWN:
-					self.rotor_tanque.disparar(self.bot_mouse)
+					self.rotor_tanque.disparar(evento.button)
+					
 			#Seccion de dibujo
 			self.ventana.blit(self.imagen_fondo, (0,0))
 			self.ventana.blit(self.base_tanque.postimagen, self.base_tanque.rect)
@@ -179,6 +187,6 @@ class Nivel1():
 			self.rotor_tanque.dibujar_Balas(self.ventana)
 			self.rotor_tanque.actualizar1(self.ventana)
 			pygame.display.update()
-			reloj.tick(30)
+			reloj.tick(60)
 			
 		return 0
