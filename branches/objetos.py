@@ -116,7 +116,7 @@ class Rotor_de_Tanque(pygame.sprite.Sprite, Jugador_Control):
 		
 	def disparar(self, boton_mouse):
 		"""dispara una bala"""
-		if boton_mouse:
+		if boton_mouse==1:
 			if self.balasPorDisparar>0:
 				bala = Bala("imagenes/nivel 1/bala.png", self.rect.center, self.angulo)
 				self.disparo.play()
