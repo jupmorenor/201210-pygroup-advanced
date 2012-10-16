@@ -1,4 +1,7 @@
 # -*- coding: UTF-8 -*-
+#
+#		gameOver.py
+#
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
 #       the Free Software Foundation; either version 2 of the License, or
@@ -12,17 +15,16 @@
 Created on 27/06/2012
 @author: Juan Pablo Moreno y Alejandro Duarte
 '''
-import pygame
-from generales import Generales
 from random import randint
+import pygame
+from funcionesBasicas import Funciones as funciones
 
 class GameOver():
 	
 	def __init__(self, ventana):
-		self.funciones = Generales()
-		self.ventana = ventana #pygame.display.set_mode(self.funciones.VENTANA) 
+		self.ventana = ventana
 		self.imagen = randint(1,3)
-		self.imagen_fondo = self.funciones.cargar_imagen("imagenes/game over "+str(self.imagen)+".jpg")#final con imagen aleatoria
+		self.imagen_fondo = funciones.cargarImagen("imagenes/game over "+str(self.imagen)+".jpg")#final con imagen aleatoria
 		self.musica_fondo = "sonido/PUPPET OF THE MAGUS.ogg"
 		self.alpha = 0
 		self.imagen_fondo.set_alpha(self.alpha)
@@ -38,20 +40,19 @@ class GameOver():
 		ventana.blit(temp, ubicacion)
 		
 	def mainGameOver(self):
-		self.funciones.cargar_musica(self.musica_fondo)
+		funciones.cargarMusica(self.musica_fondo)
 		pygame.mixer.music.play(-1)
 		
 		while True:
 			
-			if self.alpha<=255:
-				self.alpha+=0.05
+			if self.alpha <= 255:
+				self.alpha += 0.05
 				self.blit_alpha(self.ventana, self.imagen_fondo, (0,0), int(self.alpha))
 			
 			for evento in pygame.event.get():
-				if (evento.type == pygame.QUIT or evento.type == pygame.KEYDOWN) and self.alpha>=50:
+				if (evento.type == pygame.QUIT or evento.type == pygame.KEYDOWN) and self.alpha >= 50:
 					pygame.mixer.music.stop()
 					return 0
 			
 			pygame.display.update()
-			
 		return 0
