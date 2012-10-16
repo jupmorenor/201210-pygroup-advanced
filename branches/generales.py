@@ -1,3 +1,7 @@
+# -*- coding: UTF-8 -*-
+#
+#		funciones.py
+#
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
 #       the Free Software Foundation; either version 2 of the License, or
@@ -13,23 +17,36 @@ Created on 10/05/2012
 '''
 
 import pygame 
-from tkinter import *
-from pygame.locals import *
+from tkinter import Tk, Entry, Button, StringVar
 from math import degrees, radians, sin, cos, atan2
 
-class Generales():
-
-	"""Constantes para uso general de cualquier objeto"""
-	def __init__(self):
-		self.VENTANA=self.ANCHO,self.ALTO=800,600
+class Funciones():
+	'''
+	Constantes y metodos estaticos para el uso general del programa.
+	Tales como:
+		cargarImagen
+		cargarSonido
+		cargarMusica
+		dibujarTexto
+		agregarImagen
+		direccionPunto
+		vectorEnX
+		vectorEnY
+	'''
+	
+	#Constantes para el ancho y alto de la ventana
+	VENTANA = (ANCHO, ALTO) = (800, 600)
 		
-	def leerDatos(self):
-		self.nombre=""
+	@classmethod
+	def ingresarUsuario(cls):
+		
+		cls.nombre=""
+		
 		def salir():
 			root.quit()
 	
 		def cargarArchivo():
-			self.nombre=a.get()
+			cls.nombre=a.get()
 			root.destroy()
 	
 		def obtenerN():
@@ -48,31 +65,45 @@ class Generales():
 		root.mainloop()
 		return (obtenerN())
 	
-	"""Funciones para uso general de cualquier objeto"""
-	def cargar_imagen(self, ruta):
-		"""funcion para cargar imagenes"""
-		try: imagen=pygame.image.load(ruta).convert_alpha()
+	#Funciones para uso general de cualquier objeto
+	@classmethod
+	def cargarImagen(cls, archivo):
+		"""
+		Crea un objeto que contiene la imagen dada, si la imagen no se encuentra, 
+		el programa no puede iniciar.
+		"""
+		try: 
+			imagen = pygame.image.load(archivo).convert_alpha()
 		except(pygame.error): #en caso de error
-			print("No se pudo cargar la imagen: ", ruta)
+			print("No se pudo cargar la imagen: ", archivo)
+			pygame.quit()
 			raise(SystemExit)
 		return imagen
 		
-	def cargar_sonido(self, ruta):
-		"""Funcion para cargar sonidos"""
-		try:sonido=pygame.mixer.Sound(ruta)
+	@classmethod
+	def cargarSonido(cls, archivo):
+		"""Crea un objeto a partir del archivo de efecto de sonido dado"""
+		try:
+			sonido = pygame.mixer.Sound(archivo)
 		except(pygame.error):
-			print("No se pudo cargar el sonido: ", ruta)
-			sonido=None
+			print("No se pudo cargar el sonido: ", archivo)
+			sonido = None
 		return sonido
 	
-	def cargar_musica(self, ruta):
-		"""Funcion para cargar musica"""
-		try: pygame.mixer.music.load(ruta)
+	@classmethod
+	def cargarMusica(cls, archivo):
+		"""Carga en el mixer el archivo de musica dado para su reproduccion"""
+		try: 
+			pygame.mixer.music.load(archivo)
 		except(pygame.error):
-			print("No se pudo cargar la cancion: ", ruta)
-		
-	def texto(self, texto, posx, posy, color):
-		"""Funcion para escritura de texto"""
+			print("No se pudo cargar la cancion: ", archivo)
+	
+	@classmethod	
+	def dibujarTexto(cls, texto, posx, posy, color):
+		"""
+		Genera dado un texto y una posicion, una imagen para dibujar en pantalla 
+		y su respectivo rectangulo contenedor.
+		"""
 		fuente = pygame.font.Font("DroidSans.ttf", 20)
 		salida = pygame.font.Font.render(fuente, texto, 1, color)
 		salida_rect = salida.get_rect()
@@ -80,29 +111,32 @@ class Generales():
 		salida_rect.centery = posy
 		return salida, salida_rect
 	
-	def agregar_imagen(self, ruta, largo, alto):
-		"""Funcion para cortar las subimagenes de una imagen animada"""
+	@classmethod
+	def agregarImagen(cls, ruta, ancho, alto):
+		"""Corta las subimagenes de una plantilla de imagenes para animar"""
 		subimagenes = []
-		imagen_completa = self.cargar_imagen(ruta)
-		ancho_total, altura_total = imagen_completa.get_size()
-		for i in range(int(ancho_total/largo)):
-			subimagenes.append(imagen_completa.subsurface((i*largo,0,largo,alto)))
+		imagen_completa = cls.cargarImagen(ruta)
+		ancho_total, alto_total = imagen_completa.get_size()
+		for i in range(int(alto_total / alto)):
+			for j in range(int(ancho_total / ancho)):
+				subimagenes.append(imagen_completa.subsurface(pygame.Rect(j * ancho, i * alto, ancho, alto)))
 		return subimagenes
 	
-	def direccion_punto(self, x,y,x2_y2,):
-		"""Funcion que devuelve la direccion que hay hacia un punto"""
+	@classmethod
+	def direccionPunto(cls, x, y, x2_y2,):
+		"""Devuelve la direccion en grados que hay hacia un punto"""
 		x2, y2 = x2_y2
-		dist_x = x2-x
-		dist_y = y2-y
-		direccion=-1*degrees(atan2(dist_y,dist_x))
+		dist_x = x2 - x
+		dist_y = y2 - y
+		direccion = -1 * degrees(atan2(dist_y, dist_x))
 		return direccion
-		
-	def vector_en_x(self, length, dirr):
-		"""Devuelve el componente x de un vector"""
-		x_dist=cos(radians(dirr)) * length
-		return x_dist
 	
-	def vector_en_y(self, length, dirr):
+	@classmethod	
+	def vectorEnX(cls, dist, ang):
+		"""Devuelve el componente x de un vector"""
+		return cos(radians(ang)) * dist
+	
+	@classmethod
+	def vectorEnY(cls, dist, ang):
 		"""Devuelve el componente y de un vector"""
-		y_dist=sin(radians(dirr)) * -length
-		return y_dist
+		return sin(radians(ang)) * -dist
