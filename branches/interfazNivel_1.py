@@ -1,4 +1,7 @@
 # -*- coding: UTF-8 -*-
+#
+#		nivel_1.py
+#
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
 #       the Free Software Foundation; either version 2 of the License, or
@@ -13,17 +16,15 @@ Created on 10/05/2012
 @author: Juan Pablo Moreno y Alejandro Duarte
 '''
 
-import pygame
-from pygame.locals import *
-from generales import Generales
+from funcionesBasicas import Funciones as funciones
 from objetos import *
 
 class Nivel1():
 	"""Escena numero 1 del juego"""
+	
 	def __init__(self, pantalla, nombre):
-		self.funciones = Generales()
-		self.ventana = pantalla #pygame.display.set_mode(self.funciones.VENTANA)
-		self.imagen_fondo = self.funciones.cargar_imagen("imagenes/nivel 1/fondo_Nv_1.png")
+		self.ventana = pantalla
+		self.imagen_fondo = funciones.cargarImagen("imagenes/nivel 1/fondo_Nv_1.png")
 		self.musica_fondo = "sonido/CROSSFIRE BARRAGE.ogg"
 		self.base_tanque = Base_de_Tanque("imagenes/nivel 1/tanque_base_Nv_1.png")
 		self.rotor_tanque = Rotor_de_Tanque("imagenes/nivel 1/tanque_rotor_Nv_1.png", "sonido/Explosion01.ogg", nombre)
@@ -33,58 +34,60 @@ class Nivel1():
 		self.bonuscreado=[]
 		self.explosiones = []
 		self.alarma = 1
-		self.salir =False
+		self.salir = False
 		
 	def controlEnemigos(self):
 		self.alarma -= 0.1
-		if self.alarma<=0:
-			xrandom = random.randint(0,funciones.VENTANA[0])
-			yrandom = random.randint(0,funciones.VENTANA[1])
-			if not (xrandom>0 and xrandom<funciones.VENTANA[0])and(yrandom>0 and yrandom<funciones.VENTANA[1]):
-				enemigo=Enemigo_Tanque(xrandom, yrandom, "imagenes/nivel 1/tanque_enemigo_Nv_1.png", "sonido/Explosion01.ogg")
+		if self.alarma <= 0:
+			xrandom = random.randint(0, funciones.VENTANA[0])
+			yrandom = random.randint(0, funciones.VENTANA[1])
+			if not (xrandom > 0 and xrandom < funciones.VENTANA[0]) \
+			and (yrandom > 0 and yrandom < funciones.VENTANA[1]):
+				enemigo = Enemigo_Tanque(xrandom, yrandom, 
+										"imagenes/nivel 1/tanque_enemigo_Nv_1.png", 
+										"sonido/Explosion01.ogg")
 				self.enemigos.append(enemigo)
-				self.alarma=1
+				self.alarma = 1
 		
 	def actualizarEnemigos(self):	
-		for i in range(len(self.enemigos)):
-			self.enemigos[i].actualizar(self.base_tanque.posicion)
-			self.enemigos[i].disparar()
-			self.ventana.blit(self.enemigos[i].postimagen, self.enemigos[i].rect)
-			if self.enemigos[i].dibujar_Balas(self.ventana, self.base_tanque.rect):
-				self.rotor_tanque.vida-=20
+		for enemigo in self.enemigos:
+			enemigo.actualizar(self.base_tanque.posicion)
+			enemigo.disparar()
+			self.ventana.blit(enemigo.postimagen, enemigo.rect)
+			if enemigo.dibujar_Balas(self.ventana, self.base_tanque.rect):
+				self.rotor_tanque.vida -= 20
 			
-		
 	def controlExplosiones(self):
 		for i in range(len(self.explosiones)):
 			if self.explosiones[i].actualizar(self.ventana):
-				self.explosiones.pop(i)
+				del(self.explosiones[i])
 				break
 			
 	def controlBonuses(self):
-		bonus=None
+		bonus = None
 		for i in range(len(self.bonuscreado)):
-			if self.bonuscreado[i]==None:
-				self.bonuscreado.pop(i)
+			if self.bonuscreado[i] == None:
+				del(self.bonuscreado[i])
 				break
 			elif self.bonuscreado[i].actualizar(self.ventana, self.base_tanque.rect):
-				bonus=self.bonuscreado.pop(i)
+				bonus = self.bonuscreado.pop(i)
 				break
-		if bonus!=None:
-			if bonus.tipo==1:
-				self.rotor_tanque.vida+=10
-			elif bonus.tipo==2:
-				self.rotor_tanque.balasPorDisparar+=5
-			elif bonus.tipo==3:
-				self.rotor_tanque.tiempo+=500
-			elif bonus.tipo==4:
+		if bonus != None:
+			if bonus.tipo == 1:
+				self.rotor_tanque.vida += 10
+			elif bonus.tipo == 2:
+				self.rotor_tanque.balasPorDisparar += 5
+			elif bonus.tipo == 3:
+				self.rotor_tanque.tiempo += 500
+			elif bonus.tipo == 4:
 				j=0
 				for j in range(len(self.enemigos)):
 					if(j!=0):
 						j=0
-					self.rotor_tanque.puntajeNivel+=len(self.enemigos)
+					self.rotor_tanque.puntajeNivel += len(self.enemigos)
 					self.bonuscreado.append(self.enemigos[j].darBonus())
-					sale=self.enemigos.pop(j)
-					explosion=Explosion(sale.rect.center)
+					sale = self.enemigos.pop(j)
+					explosion = Explosion(sale.rect.center)
 					self.explosiones.append(explosion)
 
 	def controlColisiones(self):
@@ -92,29 +95,30 @@ class Nivel1():
 			for j in range(len(self.enemigos)):
 				if self.enemigos[j].rect.colliderect(self.rotor_tanque.balas_disparadas[i].rect):
 					self.bonuscreado.append(self.enemigos[j].darBonus())
-					sale=self.enemigos.pop(j)
-					self.rotor_tanque.balas_disparadas.pop(i)
-					explosion=Explosion(sale.rect.center)
+					sale = self.enemigos.pop(j)
+					del(self.rotor_tanque.balas_disparadas[i])
+					explosion = sale.destruir() #Explosion(sale.rect.center)
 					self.explosiones.append(explosion)
-					self.rotor_tanque.puntajeNivel+=1
+					self.rotor_tanque.puntajeNivel += 1
+					del(sale)
 					break
 			break
 		
 	def guardarDatos(self, nombre):
-		nombreJ = nombre + ".txt"
+		nombreJ = nombre + ".pysave"
 		archivo = open(nombreJ, "w")
 		vidaJ = self.rotor_tanque.vida
 		tiempoJ = self.rotor_tanque.tiempo
 		balasJ = self.rotor_tanque.balasPorDisparar
 		puntajeJ = self.rotor_tanque.puntajeNivel
-		archivo.write(str(vidaJ)+"\n")
-		archivo.write(str(tiempoJ)+"\n")
-		archivo.write(str(balasJ)+"\n")
-		archivo.write(str(puntajeJ)+"\n")
+		archivo.write(str(vidaJ) + "\n")
+		archivo.write(str(tiempoJ) + "\n")
+		archivo.write(str(balasJ) + "\n")
+		archivo.write(str(puntajeJ) + "\n")
 		archivo.close()
 		
 	def cargarDatos(self, nombre):
-		nombreJ = nombre + ".txt"
+		nombreJ = nombre + ".pysave"
 		try:
 			archivo = open(nombreJ)
 			lis = archivo.readlines()
@@ -127,12 +131,13 @@ class Nivel1():
 			print("No hay datos registrados con ese nombre")
 				
 	def terminarJuego(self):
-		if self.rotor_tanque.vida <= 0 or self.rotor_tanque.tiempo<=0:
+		if self.rotor_tanque.vida <= 0 or self.rotor_tanque.tiempo <= 0:
 			pygame.mixer.music.stop()
 			if 	self.rotor_tanque.puntajeNivel > 0:
 				try:
-					puntajes = open("puntajes.txt", 'a')
-					puntajes.writelines(str(self.rotor_tanque.nombreJugador)+"\t\t"+str(self.rotor_tanque.puntajeNivel)+"\n")
+					puntajes = open("puntajes.pyfile", 'a')
+					puntajes.writelines(str(self.rotor_tanque.nombreJugador) 
+									+ "\t\t" + str(self.rotor_tanque.puntajeNivel) + "\n")
 					puntajes.close()
 				except(IOError): 
 					pass
@@ -141,6 +146,7 @@ class Nivel1():
 				import gameOver
 				terminar = gameOver.GameOver(self.ventana)
 				terminar.mainGameOver()
+				del(gameOver)
 				return True
 			except(ImportError):
 				print("No se encuentra el módulo correspondiente")
@@ -149,9 +155,9 @@ class Nivel1():
 			return False
 				
 	def mainNivel1(self):
-		reloj=pygame.time.Clock()
+		reloj = pygame.time.Clock()
 		pygame.key.set_repeat(1,25)
-		self.funciones.cargar_musica(self.musica_fondo)
+		funciones.cargarMusica(self.musica_fondo)
 		pygame.mixer.music.play(-1)
 		
 		while True:
