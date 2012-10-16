@@ -47,13 +47,12 @@ class Intro():
 			else:
 				try:
 					import menu
+					self.juego = menu.Menu_UDTanks(self.ventana)
+					self.juego.mainMenu()
 				except(ImportError):
 					print("No se encuentra el juego")
 					return 0
-				finally:
-					self.juego = menu.Menu_UDTanks(self.ventana)
-					self.juego.mainMenu()
-				
+
 			pygame.display.update()
 			reloj.tick(60)
 		return 0
