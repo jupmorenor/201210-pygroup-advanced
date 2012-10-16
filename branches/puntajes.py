@@ -1,4 +1,7 @@
 # -*- coding: UTF-8 -*-
+#
+#		puntajes.py
+#
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
 #       the Free Software Foundation; either version 2 of the License, or
@@ -13,29 +16,28 @@ Created on 8/07/2012
 @author: Juan Pablo Moreno y Alejandro Duarte
 '''
 import pygame
-from generales import Generales
+from funcionesBasicas import Funciones as funciones
 
 class Puntajes():
 	
 	def __init__(self, pantalla):
 		self.ventana = pantalla
-		self.funciones = Generales()
-		self.imagen_fondo = self.funciones.cargar_imagen("imagenes/puntajes.jpg")
+		self.imagen_fondo = funciones.cargarImagen("imagenes/puntajes.jpg")
 		self.musica_fondo = "sonido/EXTEND SKY.ogg"
 		self.color_texto=[255,255,255]
 		self.puntajes = []
 		
 	def cargarPuntajes(self):
 		try:
-			puntajes = open("puntajes.txt", 'r')
+			puntajes = open("puntajes.pyfile", 'r')
 			lista = puntajes.readlines()
 			puntajes.close()
 		except(IOError):	
-			lista = "NO SE ENCONTRARON PUNTAJES REGISTRADOS"
+			lista = "NO SE ENCONTRARON PUNTAJES REGISTRADOS".split()
 		return lista
 		
 	def mainPuntajes(self):
-		self.funciones.cargar_musica(self.musica_fondo)
+		funciones.cargarMusica(self.musica_fondo)
 		pygame.mixer.music.play(-1)
 		
 		self.puntajes = self.cargarPuntajes()
@@ -50,7 +52,10 @@ class Puntajes():
 			self.ventana.blit(self.imagen_fondo, (0,0))
 			
 			for i in range(1, len(self.puntajes)+1):
-				imagen, rect = self.funciones.texto(self.puntajes[i-1].expandtabs(), self.funciones.VENTANA[0]/2, (self.funciones.VENTANA[1]/20)*i, self.color_texto)
+				imagen, rect = funciones.dibujarTexto(self.puntajes[i-1].expandtabs(),
+													 funciones.VENTANA[0]/2, 
+													 (funciones.VENTANA[1]/20) * i, 
+													 self.color_texto)
 				self.ventana.blit(imagen, rect)
 			
 			pygame.display.update()
