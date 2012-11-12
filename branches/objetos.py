@@ -164,7 +164,7 @@ class Enemigo_Tanque(pygame.sprite.Sprite):
 		self.balas_disparadas = []
 	
 	def actualizar(self, direccion):
-		self.angulo = funciones.direccionPunto(self.rect.centerx, self.rect.centery, direccion)
+		self.angulo = funciones.direccionPunto(self.posicion[0], self.posicion[1], direccion)
 		self.postimagen = pygame.transform.rotate(self.preimagen, self.angulo)
 		self.rect = self.postimagen.get_rect()
 		self.posicion[0] += funciones.vectorEnX(self.velocidad, self.angulo)
@@ -175,21 +175,13 @@ class Enemigo_Tanque(pygame.sprite.Sprite):
 	def disparar(self):
 		if self.alarma <= 0:
 			bala = Bala("imagenes/nivel 1/bala.png", self.rect.center, self.angulo)
-			self.balas_disparadas.append(bala)
 			self.disparo.play()
 			self.frecuencia -= 50
 			if self.frecuencia <= 50: 
 				self.frecuencia = 500
 			self.alarma = self.frecuencia
-
-	def dibujar_Balas(self, ventana, otro):
-		for i in range(len(self.balas_disparadas)):
-			if self.balas_disparadas[i].actualizar(ventana):
-				del(self.balas_disparadas[i])
-				break
-			if self.balas_disparadas[i].rect.colliderect(otro):
-				del(self.balas_disparadas[i])
-				return True
+			return bala
+		return False
 		
 	def darBonus(self):
 		bonus = random.randint(1,10)
