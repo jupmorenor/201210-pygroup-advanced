@@ -90,18 +90,24 @@ class Base_de_Tanque(pygame.sprite.Sprite):
 		self.velocidad = 5
 			
 	def actualizar(self, evento):
-		if evento.key == K_UP:
-			self.posicion[1] -= self.velocidad
-			self.postimagen = pygame.transform.rotate(self.preimagen,90)
-		if evento.key == K_DOWN:
-			self.posicion[1] += self.velocidad
-			self.postimagen = pygame.transform.rotate(self.preimagen,270)
-		if evento.key == K_LEFT:
-			self.posicion[0] -= self.velocidad
-			self.postimagen = pygame.transform.rotate(self.preimagen,180)
-		if evento.key == K_RIGHT:
-			self.posicion[0] += self.velocidad
-			self.postimagen = pygame.transform.rotate(self.preimagen,0)
+		
+		self.horizontal = int(evento.key == K_RIGHT) - int(evento.key == K_LEFT)
+		self.vertical = int(evento.key == K_DOWN) - int(evento.key == K_UP)
+				
+		if self.horizontal != 0:
+			self.posicion[0] += self.velocidad * self.horizontal
+			if self.horizontal > 0:
+				self.postimagen = pygame.transform.rotate(self.preimagen,0)
+			elif self.horizontal < 0:
+				self.postimagen = pygame.transform.rotate(self.preimagen,180)
+				
+		elif self.vertical != 0:
+			self.posicion[1] += self.velocidad * self.vertical
+			if self.vertical > 0:
+				self.postimagen = pygame.transform.rotate(self.preimagen,270)
+			elif self.vertical < 0:
+				self.postimagen = pygame.transform.rotate(self.preimagen,90)
+					
 		self.posicion = [min(max(self.posicion[0], 0), funciones.VENTANA[0]), 
 						min(max(self.posicion[1], 0), funciones.VENTANA[1])]
 		self.rect.center = self.posicion
@@ -207,14 +213,16 @@ class Bala(pygame.sprite.Sprite):
 		self.imagen = pygame.transform.rotate(funciones.cargarImagen(ruta_img), self.angulo)
 		self.rect = self.imagen.get_rect()
 		self.velocidad = 4
-		self.rect.center = posicion_inicial
+		self.posicion = list(posicion_inicial)
+		self.rect.center = self.posicion
 		
 	def actualizar(self, ventana):
-		self.rect.centerx += funciones.vectorEnX(self.velocidad, self.angulo)
-		self.rect.centery += funciones.vectorEnY(self.velocidad, self.angulo)
+		self.posicion[0] += funciones.vectorEnX(self.velocidad, self.angulo)
+		self.posicion[1] += funciones.vectorEnY(self.velocidad, self.angulo)
+		self.rect.center = self.posicion
 		ventana.blit(self.imagen, self.rect)
-		if (self.rect.centerx > funciones.VENTANA[0]) or (self.rect.centerx < 0) \
-		or (self.rect.centery > funciones.VENTANA[1]) or (self.rect.centery < 0):
+		if (self.posicion[0] > funciones.VENTANA[0]) or (self.posicion[0] < 0) \
+		or (self.posicion[1] > funciones.VENTANA[1]) or (self.posicion[1] < 0):
 			return True	
 
 class Explosion(pygame.sprite.Sprite):
