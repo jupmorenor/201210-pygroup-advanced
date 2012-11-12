@@ -31,6 +31,7 @@ class Nivel1():
 		self.pos_mouse = []
 		self.bot_mouse = 0
 		self.enemigos = []
+		self.balas = []
 		self.bonuscreado=[]
 		self.explosiones = []
 		self.alarma = 1
@@ -52,9 +53,11 @@ class Nivel1():
 	def actualizarEnemigos(self):	
 		for enemigo in self.enemigos:
 			enemigo.actualizar(self.base_tanque.posicion)
-			enemigo.disparar()
+			bala = enemigo.disparar()
 			self.ventana.blit(enemigo.postimagen, enemigo.rect)
-			if enemigo.dibujar_Balas(self.ventana, self.base_tanque.rect):
+			if bala is not False:
+				self.balas.append(bala)
+		if self.dibujar_Balas(self.ventana, self.base_tanque.rect):
 				self.rotor_tanque.vida -= 20
 			
 	def controlExplosiones(self):
@@ -62,6 +65,15 @@ class Nivel1():
 			if self.explosiones[i].actualizar(self.ventana):
 				del(self.explosiones[i])
 				break
+	
+	def dibujar_Balas(self, ventana, otro):
+		for i in range(len(self.balas)):
+			if self.balas[i].actualizar(ventana):
+				del(self.balas[i])
+				break
+			if self.balas[i].rect.colliderect(otro):
+				del(self.balas[i])
+				return True
 			
 	def controlBonuses(self):
 		bonus = None
