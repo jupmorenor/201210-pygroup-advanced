@@ -1,0 +1,1 @@
+Videojuego desarrollado en python con Pygame como proyecto para el grupo de trabajo Pygroup de la Universidad Distrital Francisco Jose de Caldas.
